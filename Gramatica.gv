@@ -1,0 +1,24 @@
+// gramatic.gv
+digraph Gramatica {
+	0 [label=program]
+	1 [label=class]
+	0 -> 1
+	2 [label=Program]
+	0 -> 2
+	3 [label="{"]
+	0 -> 3
+	4 [label=declaration]
+	0 -> 4
+	5 [label=varDeclaration]
+	4 -> 5
+	6 [label=varType]
+	5 -> 6
+	7 [label=int]
+	6 -> 7
+	8 [label=var]
+	5 -> 8
+	9 [label=";"]
+	5 -> 9
+	10 [label="}"]
+	0 -> 10
+}

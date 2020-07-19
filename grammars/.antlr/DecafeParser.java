@@ -1,4 +1,4 @@
-// Generated from c:\Users\Javier\Desktop\U\compis2\grammars\Decafe.g4 by ANTLR 4.7.1
+// Generated from c:\Users\Javier\Desktop\U\compis2\grammars\Decafe.g4 by ANTLR 4.8
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class DecafeParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.7.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -20,8 +20,8 @@ public class DecafeParser extends Parser {
 		T__9=10, T__10=11, T__11=12, T__12=13, T__13=14, T__14=15, T__15=16, T__16=17, 
 		T__17=18, T__18=19, T__19=20, T__20=21, T__21=22, T__22=23, T__23=24, 
 		T__24=25, T__25=26, T__26=27, T__27=28, T__28=29, T__29=30, T__30=31, 
-		T__31=32, T__32=33, T__33=34, T__34=35, T__35=36, T__36=37, LETTER=38, 
-		DIGIT=39, ID=40, NUM=41, CHAR=42;
+		T__31=32, T__32=33, T__33=34, T__34=35, T__35=36, T__36=37, ID=38, NUM=39, 
+		CHAR=40, LETTER=41, DIGIT=42;
 	public static final int
 		RULE_program = 0, RULE_declaration = 1, RULE_varDeclaration = 2, RULE_structDeclaration = 3, 
 		RULE_varType = 4, RULE_methodDeclaration = 5, RULE_methodType = 6, RULE_parameter = 7, 
@@ -29,27 +29,36 @@ public class DecafeParser extends Parser {
 		RULE_expression = 12, RULE_methodCall = 13, RULE_arg = 14, RULE_op = 15, 
 		RULE_arith_op = 16, RULE_rel_op = 17, RULE_eq_op = 18, RULE_cond_op = 19, 
 		RULE_literal = 20, RULE_int_literal = 21, RULE_char_literal = 22, RULE_bool_literal = 23;
-	public static final String[] ruleNames = {
-		"program", "declaration", "varDeclaration", "structDeclaration", "varType", 
-		"methodDeclaration", "methodType", "parameter", "parameterType", "block", 
-		"statement", "location", "expression", "methodCall", "arg", "op", "arith_op", 
-		"rel_op", "eq_op", "cond_op", "literal", "int_literal", "char_literal", 
-		"bool_literal"
-	};
+	private static String[] makeRuleNames() {
+		return new String[] {
+			"program", "declaration", "varDeclaration", "structDeclaration", "varType", 
+			"methodDeclaration", "methodType", "parameter", "parameterType", "block", 
+			"statement", "location", "expression", "methodCall", "arg", "op", "arith_op", 
+			"rel_op", "eq_op", "cond_op", "literal", "int_literal", "char_literal", 
+			"bool_literal"
+		};
+	}
+	public static final String[] ruleNames = makeRuleNames();
 
-	private static final String[] _LITERAL_NAMES = {
-		null, "'class'", "'Program'", "'{'", "'}'", "';'", "'['", "']'", "'struct'", 
-		"'int'", "'char'", "'boolean'", "'void'", "'('", "','", "')'", "'if'", 
-		"'else'", "'while'", "'return'", "'='", "'.'", "'-'", "'!'", "'+'", "'*'", 
-		"'/'", "'%'", "'<'", "'>'", "'<='", "'>='", "'=='", "'!='", "'&&'", "'||'", 
-		"'true'", "'false'"
-	};
-	private static final String[] _SYMBOLIC_NAMES = {
-		null, null, null, null, null, null, null, null, null, null, null, null, 
-		null, null, null, null, null, null, null, null, null, null, null, null, 
-		null, null, null, null, null, null, null, null, null, null, null, null, 
-		null, null, "LETTER", "DIGIT", "ID", "NUM", "CHAR"
-	};
+	private static String[] makeLiteralNames() {
+		return new String[] {
+			null, "'class'", "'Program'", "'{'", "'}'", "';'", "'['", "']'", "'struct'", 
+			"'int'", "'char'", "'boolean'", "'void'", "'('", "','", "')'", "'if'", 
+			"'else'", "'while'", "'return'", "'='", "'.'", "'-'", "'!'", "'+'", "'*'", 
+			"'/'", "'%'", "'<'", "'>'", "'<='", "'>='", "'=='", "'!='", "'&&'", "'||'", 
+			"'true'", "'false'"
+		};
+	}
+	private static final String[] _LITERAL_NAMES = makeLiteralNames();
+	private static String[] makeSymbolicNames() {
+		return new String[] {
+			null, null, null, null, null, null, null, null, null, null, null, null, 
+			null, null, null, null, null, null, null, null, null, null, null, null, 
+			null, null, null, null, null, null, null, null, null, null, null, null, 
+			null, null, "ID", "NUM", "CHAR", "LETTER", "DIGIT"
+		};
+	}
+	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
 	/**
@@ -99,6 +108,7 @@ public class DecafeParser extends Parser {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
+
 	public static class ProgramContext extends ParserRuleContext {
 		public List<DeclarationContext> declaration() {
 			return getRuleContexts(DeclarationContext.class);
@@ -1501,15 +1511,15 @@ public class DecafeParser extends Parser {
 		"\3\2\2\2\60\u00ee\3\2\2\2\62\63\7\3\2\2\63\64\7\4\2\2\648\7\5\2\2\65\67"+
 		"\5\4\3\2\66\65\3\2\2\2\67:\3\2\2\28\66\3\2\2\289\3\2\2\29;\3\2\2\2:8\3"+
 		"\2\2\2;<\7\6\2\2<\3\3\2\2\2=A\5\b\5\2>A\5\6\4\2?A\5\f\7\2@=\3\2\2\2@>"+
-		"\3\2\2\2@?\3\2\2\2A\5\3\2\2\2BC\5\n\6\2CD\7*\2\2DE\7\7\2\2EN\3\2\2\2F"+
-		"G\5\n\6\2GH\7*\2\2HI\7\b\2\2IJ\7+\2\2JK\7\t\2\2KL\7\7\2\2LN\3\2\2\2MB"+
-		"\3\2\2\2MF\3\2\2\2N\7\3\2\2\2OP\7\n\2\2PQ\7*\2\2QR\7\5\2\2RS\5\6\4\2S"+
-		"T\7\6\2\2T\t\3\2\2\2U]\7\13\2\2V]\7\f\2\2W]\7\r\2\2XY\7\n\2\2Y]\7*\2\2"+
+		"\3\2\2\2@?\3\2\2\2A\5\3\2\2\2BC\5\n\6\2CD\7(\2\2DE\7\7\2\2EN\3\2\2\2F"+
+		"G\5\n\6\2GH\7(\2\2HI\7\b\2\2IJ\7)\2\2JK\7\t\2\2KL\7\7\2\2LN\3\2\2\2MB"+
+		"\3\2\2\2MF\3\2\2\2N\7\3\2\2\2OP\7\n\2\2PQ\7(\2\2QR\7\5\2\2RS\5\6\4\2S"+
+		"T\7\6\2\2T\t\3\2\2\2U]\7\13\2\2V]\7\f\2\2W]\7\r\2\2XY\7\n\2\2Y]\7(\2\2"+
 		"Z]\5\b\5\2[]\7\16\2\2\\U\3\2\2\2\\V\3\2\2\2\\W\3\2\2\2\\X\3\2\2\2\\Z\3"+
-		"\2\2\2\\[\3\2\2\2]\13\3\2\2\2^_\5\16\b\2_`\7*\2\2`a\7\17\2\2af\5\20\t"+
+		"\2\2\2\\[\3\2\2\2]\13\3\2\2\2^_\5\16\b\2_`\7(\2\2`a\7\17\2\2af\5\20\t"+
 		"\2bc\7\20\2\2ce\5\20\t\2db\3\2\2\2eh\3\2\2\2fd\3\2\2\2fg\3\2\2\2gi\3\2"+
 		"\2\2hf\3\2\2\2ij\7\21\2\2jk\5\24\13\2k\r\3\2\2\2lm\t\2\2\2m\17\3\2\2\2"+
-		"no\5\22\n\2op\7*\2\2p\21\3\2\2\2qr\t\3\2\2r\23\3\2\2\2sw\7\5\2\2tv\5\6"+
+		"no\5\22\n\2op\7(\2\2p\21\3\2\2\2qr\t\3\2\2r\23\3\2\2\2sw\7\5\2\2tv\5\6"+
 		"\4\2ut\3\2\2\2vy\3\2\2\2wu\3\2\2\2wx\3\2\2\2x}\3\2\2\2yw\3\2\2\2z|\5\26"+
 		"\f\2{z\3\2\2\2|\177\3\2\2\2}{\3\2\2\2}~\3\2\2\2~\u0080\3\2\2\2\177}\3"+
 		"\2\2\2\u0080\u0081\7\6\2\2\u0081\25\3\2\2\2\u0082\u0083\7\22\2\2\u0083"+
@@ -1525,7 +1535,7 @@ public class DecafeParser extends Parser {
 		"\3\2\2\2\u009f\u00a0\3\2\2\2\u00a0\u00a1\3\2\2\2\u00a1\u00a3\7\7\2\2\u00a2"+
 		"\u0082\3\2\2\2\u00a2\u008b\3\2\2\2\u00a2\u0091\3\2\2\2\u00a2\u0096\3\2"+
 		"\2\2\u00a2\u0099\3\2\2\2\u00a2\u009a\3\2\2\2\u00a2\u009f\3\2\2\2\u00a3"+
-		"\27\3\2\2\2\u00a4\u00ab\7*\2\2\u00a5\u00a6\7*\2\2\u00a6\u00a7\7\b\2\2"+
+		"\27\3\2\2\2\u00a4\u00ab\7(\2\2\u00a5\u00a6\7(\2\2\u00a6\u00a7\7\b\2\2"+
 		"\u00a7\u00a8\5\32\16\2\u00a8\u00a9\7\t\2\2\u00a9\u00ab\3\2\2\2\u00aa\u00a4"+
 		"\3\2\2\2\u00aa\u00a5\3\2\2\2\u00ab\u00ae\3\2\2\2\u00ac\u00ad\7\27\2\2"+
 		"\u00ad\u00af\5\30\r\2\u00ae\u00ac\3\2\2\2\u00ae\u00af\3\2\2\2\u00af\31"+
@@ -1537,7 +1547,7 @@ public class DecafeParser extends Parser {
 		"\3\2\2\2\u00bc\u00b8\3\2\2\2\u00bd\u00c4\3\2\2\2\u00be\u00bf\f\6\2\2\u00bf"+
 		"\u00c0\5 \21\2\u00c0\u00c1\5\32\16\7\u00c1\u00c3\3\2\2\2\u00c2\u00be\3"+
 		"\2\2\2\u00c3\u00c6\3\2\2\2\u00c4\u00c2\3\2\2\2\u00c4\u00c5\3\2\2\2\u00c5"+
-		"\33\3\2\2\2\u00c6\u00c4\3\2\2\2\u00c7\u00c8\7*\2\2\u00c8\u00d1\7\17\2"+
+		"\33\3\2\2\2\u00c6\u00c4\3\2\2\2\u00c7\u00c8\7(\2\2\u00c8\u00d1\7\17\2"+
 		"\2\u00c9\u00ce\5\36\20\2\u00ca\u00cb\7\20\2\2\u00cb\u00cd\5\36\20\2\u00cc"+
 		"\u00ca\3\2\2\2\u00cd\u00d0\3\2\2\2\u00ce\u00cc\3\2\2\2\u00ce\u00cf\3\2"+
 		"\2\2\u00cf\u00d2\3\2\2\2\u00d0\u00ce\3\2\2\2\u00d1\u00c9\3\2\2\2\u00d1"+
@@ -1549,7 +1559,7 @@ public class DecafeParser extends Parser {
 		"\u00e1\u00e2\t\6\2\2\u00e2\'\3\2\2\2\u00e3\u00e4\t\7\2\2\u00e4)\3\2\2"+
 		"\2\u00e5\u00e9\5,\27\2\u00e6\u00e9\5.\30\2\u00e7\u00e9\5\60\31\2\u00e8"+
 		"\u00e5\3\2\2\2\u00e8\u00e6\3\2\2\2\u00e8\u00e7\3\2\2\2\u00e9+\3\2\2\2"+
-		"\u00ea\u00eb\7+\2\2\u00eb-\3\2\2\2\u00ec\u00ed\7,\2\2\u00ed/\3\2\2\2\u00ee"+
+		"\u00ea\u00eb\7)\2\2\u00eb-\3\2\2\2\u00ec\u00ed\7*\2\2\u00ed/\3\2\2\2\u00ee"+
 		"\u00ef\t\b\2\2\u00ef\61\3\2\2\2\258@M\\fw}\u0089\u0093\u009f\u00a2\u00aa"+
 		"\u00ae\u00bc\u00c4\u00ce\u00d1\u00db\u00e8";
 	public static final ATN _ATN =

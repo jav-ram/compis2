@@ -1,17 +1,19 @@
 grammar Decafe;
 
+ID : LETTER (LETTER | DIGIT)*;
+NUM : DIGIT (DIGIT)*;
+CHAR: LETTER | '\'' DIGIT '\'';
+
 LETTER : ('a' .. 'z' | 'A' .. 'Z');
 DIGIT : [0-9]+;
 
-ID : LETTER (LETTER | DIGIT)*;
-NUM : DIGIT (DIGIT)*;
-CHAR: LETTER;
 
 program: 'class' 'Program' '{' (declaration)* '}';
 declaration: structDeclaration
     | varDeclaration
     | methodDeclaration;
-varDeclaration: varType ID ';' | varType ID '[' NUM ']' ';';
+varDeclaration: varType ID ';'
+    | varType ID '[' NUM ']' ';';
 structDeclaration: 'struct' ID '{' (varDeclaration) '}';
 varType: 'int'
     | 'char'
