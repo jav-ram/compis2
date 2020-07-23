@@ -9,10 +9,9 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "antlr4-mysql",
+            "name": "decafe",
             "type": "antlr-debug",
             "request": "launch",
-            //"input": "${workspaceFolder}/${command:AskForTestInput}",
             "input": "input.txt",
             "grammar": "grammars/Decafe.g4",
             "startRule": "program",

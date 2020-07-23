@@ -1,6 +1,6 @@
 from graphviz import Digraph
 from antlr4.tree.Trees import Trees
-from decafeGenerated.DecafeParser import DecafeParser
+from decafeGenerated.grammars.DecafeParser import DecafeParser
 
 TERMINAL_NODE_TYPE = "<class 'antlr4.tree.Tree.TerminalNodeImpl'>"
 ERROR_NODE_TYPE = "<class 'antlr4.tree.Tree.ErrorNodeImpl'>"
@@ -21,15 +21,24 @@ def convertInit(tree):
 
         for i in range(0, children):
             child = node.getChild(i)
+            color = "black"
             if str(type(child)) == TERMINAL_NODE_TYPE:
                 label = child.getText()
+                shape = "rectangle"
+                color = "green"
             elif str(type(child)) == ERROR_NODE_TYPE:
-                label = child.getText();
+                label = child.getText()
+                shape = "ellipse"
+                color = "red"
             else:
                 label = getNameRule(child)
+                shape = "ellipse"
+                color = "blue"
+                if child.getChildCount() <= 0 :
+                    color = "red"
 
             count += 1                          # move to next id
-            D.node(str(count), label)           # make node
+            D.node(str(count), label, shape=shape, color=color)           # make node
             D.edge(str(parentId), str(count))   # connect node to parent
             _, count = convert(child, count)               # convert all childs of current node
         

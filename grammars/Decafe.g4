@@ -7,6 +7,8 @@ CHAR: LETTER | '\'' DIGIT '\'';
 LETTER : ('a' .. 'z' | 'A' .. 'Z');
 DIGIT : [0-9]+;
 
+SPACE : (' ' | '\n' | '\r' | '\t') -> skip;
+
 
 program: 'class' 'Program' '{' (declaration)* '}';
 declaration: structDeclaration
@@ -21,7 +23,7 @@ varType: 'int'
     | 'struct' ID
     | structDeclaration
     | 'void';
-methodDeclaration: methodType ID '(' ((parameter(',' parameter)*)) ')' block;
+methodDeclaration: methodType ID '(' (parameter (',' parameter)*)? ')' block;
 methodType: 'int'
     | 'char'
     | 'boolean'
@@ -36,7 +38,7 @@ statement: 'if' '(' expression ')' block ('else' block)?
     | 'return' (expression)? ';'
     | methodCall ';'
     | block
-    | location '=' expression
+    | location '=' expression ';'
     | (expression)? ';';
 location: (ID | ID '[' expression ']') ('.' location)?;
 expression: location

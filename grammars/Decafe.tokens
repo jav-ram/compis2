@@ -40,7 +40,6 @@ NUM=39
 CHAR=40
 LETTER=41
 DIGIT=42
-SPACE=43
 'class'=1
 'Program'=2
 '{'=3
