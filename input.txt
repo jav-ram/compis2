@@ -1,8 +1,12 @@
+char d;
+int a;
+int b;
+int c;
+
 class Program {
     int var;
 
     void method1() {
-        var = 0;
-        if (var == var) {}
+        var = a;
     }
 }

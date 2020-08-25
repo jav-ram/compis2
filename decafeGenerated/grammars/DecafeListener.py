@@ -1,4 +1,4 @@
-# Generated from .\grammars\Decafe.g4 by ANTLR 4.7.2
+# Generated from grammars\Decafe.g4 by ANTLR 4.7.2
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .DecafeParser import DecafeParser
@@ -26,12 +26,30 @@ class DecafeListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by DecafeParser#varDeclaration.
-    def enterVarDeclaration(self, ctx:DecafeParser.VarDeclarationContext):
+    # Enter a parse tree produced by DecafeParser#classDeclaration.
+    def enterClassDeclaration(self, ctx:DecafeParser.ClassDeclarationContext):
         pass
 
-    # Exit a parse tree produced by DecafeParser#varDeclaration.
-    def exitVarDeclaration(self, ctx:DecafeParser.VarDeclarationContext):
+    # Exit a parse tree produced by DecafeParser#classDeclaration.
+    def exitClassDeclaration(self, ctx:DecafeParser.ClassDeclarationContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#uniqueVar.
+    def enterUniqueVar(self, ctx:DecafeParser.UniqueVarContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#uniqueVar.
+    def exitUniqueVar(self, ctx:DecafeParser.UniqueVarContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#listVar.
+    def enterListVar(self, ctx:DecafeParser.ListVarContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#listVar.
+    def exitListVar(self, ctx:DecafeParser.ListVarContext):
         pass
 
 
@@ -107,6 +125,42 @@ class DecafeListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by DecafeParser#asignStmt.
+    def enterAsignStmt(self, ctx:DecafeParser.AsignStmtContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#asignStmt.
+    def exitAsignStmt(self, ctx:DecafeParser.AsignStmtContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#ifStmt.
+    def enterIfStmt(self, ctx:DecafeParser.IfStmtContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#ifStmt.
+    def exitIfStmt(self, ctx:DecafeParser.IfStmtContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#whileStmt.
+    def enterWhileStmt(self, ctx:DecafeParser.WhileStmtContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#whileStmt.
+    def exitWhileStmt(self, ctx:DecafeParser.WhileStmtContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#returnStmt.
+    def enterReturnStmt(self, ctx:DecafeParser.ReturnStmtContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#returnStmt.
+    def exitReturnStmt(self, ctx:DecafeParser.ReturnStmtContext):
+        pass
+
+
     # Enter a parse tree produced by DecafeParser#location.
     def enterLocation(self, ctx:DecafeParser.LocationContext):
         pass
@@ -116,12 +170,93 @@ class DecafeListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by DecafeParser#expression.
-    def enterExpression(self, ctx:DecafeParser.ExpressionContext):
+    # Enter a parse tree produced by DecafeParser#methodCallExpr.
+    def enterMethodCallExpr(self, ctx:DecafeParser.MethodCallExprContext):
         pass
 
-    # Exit a parse tree produced by DecafeParser#expression.
-    def exitExpression(self, ctx:DecafeParser.ExpressionContext):
+    # Exit a parse tree produced by DecafeParser#methodCallExpr.
+    def exitMethodCallExpr(self, ctx:DecafeParser.MethodCallExprContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#negationExpr.
+    def enterNegationExpr(self, ctx:DecafeParser.NegationExprContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#negationExpr.
+    def exitNegationExpr(self, ctx:DecafeParser.NegationExprContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#opExpr.
+    def enterOpExpr(self, ctx:DecafeParser.OpExprContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#opExpr.
+    def exitOpExpr(self, ctx:DecafeParser.OpExprContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#derivedOpExpr.
+    def enterDerivedOpExpr(self, ctx:DecafeParser.DerivedOpExprContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#derivedOpExpr.
+    def exitDerivedOpExpr(self, ctx:DecafeParser.DerivedOpExprContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#literalExpr.
+    def enterLiteralExpr(self, ctx:DecafeParser.LiteralExprContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#literalExpr.
+    def exitLiteralExpr(self, ctx:DecafeParser.LiteralExprContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#negativeExpr.
+    def enterNegativeExpr(self, ctx:DecafeParser.NegativeExprContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#negativeExpr.
+    def exitNegativeExpr(self, ctx:DecafeParser.NegativeExprContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#locExpr.
+    def enterLocExpr(self, ctx:DecafeParser.LocExprContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#locExpr.
+    def exitLocExpr(self, ctx:DecafeParser.LocExprContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#parentExpr.
+    def enterParentExpr(self, ctx:DecafeParser.ParentExprContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#parentExpr.
+    def exitParentExpr(self, ctx:DecafeParser.ParentExprContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#arith_op.
+    def enterArith_op(self, ctx:DecafeParser.Arith_opContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#arith_op.
+    def exitArith_op(self, ctx:DecafeParser.Arith_opContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#arith_op_derived.
+    def enterArith_op_derived(self, ctx:DecafeParser.Arith_op_derivedContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#arith_op_derived.
+    def exitArith_op_derived(self, ctx:DecafeParser.Arith_op_derivedContext):
         pass
 
 
@@ -149,15 +284,6 @@ class DecafeListener(ParseTreeListener):
 
     # Exit a parse tree produced by DecafeParser#op.
     def exitOp(self, ctx:DecafeParser.OpContext):
-        pass
-
-
-    # Enter a parse tree produced by DecafeParser#arith_op.
-    def enterArith_op(self, ctx:DecafeParser.Arith_opContext):
-        pass
-
-    # Exit a parse tree produced by DecafeParser#arith_op.
-    def exitArith_op(self, ctx:DecafeParser.Arith_opContext):
         pass
 
 

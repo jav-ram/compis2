@@ -7,6 +7,8 @@ from decafeGenerated.grammars.DecafeLexer import DecafeLexer
 from decafeGenerated.grammars.DecafeParser import DecafeParser
 from decafeGenerated.grammars.DecafeListener import DecafeListener
 
+from visitor import MyVistor
+
 from Tree import convertor
 
 def setUpArgParser():
@@ -24,7 +26,10 @@ def main(argv):
     stream = CommonTokenStream(lexer)
     parser = DecafeParser(stream)
     tree = parser.program()
-    print(Trees.toStringTree(tree, None, parser))
+    # print(Trees.toStringTree(tree, None, parser))
+    tsymbol = MyVistor()
+    tsymbol.visit(tree)
+    print(tsymbol.symTable.ToString())
     if args.showTree:
         treeView, _ = convertor.convertInit(tree)(tree, 0)
         treeView.view()

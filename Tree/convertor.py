@@ -34,7 +34,7 @@ def convertInit(tree):
                 label = getNameRule(child)
                 shape = "ellipse"
                 color = "blue"
-                if child.getChildCount() <= 0 :
+                if child.getChildCount() <= 0:
                     color = "red"
 
             count += 1                          # move to next id
