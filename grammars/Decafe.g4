@@ -11,6 +11,7 @@ SPACE : (' ' | '\n' | '\r' | '\t') -> skip;
 
 program: declaration+;
 declaration: structDeclaration
+    | structInstantiation
     | varDeclaration
     | methodDeclaration
     | classDeclaration;
@@ -18,6 +19,7 @@ classDeclaration: 'class' lex=ID block;
 varDeclaration: typevar=varType lex=ID ';'          #uniqueVar
     | typevar=varType lex=ID '[' size=NUM ']' ';'   #listVar;
 structDeclaration: 'struct' lex=ID '{' (varDeclaration)* '}';
+structInstantiation: 'struct' struct=ID lex=ID;
 varType: 'int'
     | 'char'
     | 'boolean'

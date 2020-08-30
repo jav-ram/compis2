@@ -62,6 +62,15 @@ class DecafeListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by DecafeParser#structInstantiation.
+    def enterStructInstantiation(self, ctx:DecafeParser.StructInstantiationContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#structInstantiation.
+    def exitStructInstantiation(self, ctx:DecafeParser.StructInstantiationContext):
+        pass
+
+
     # Enter a parse tree produced by DecafeParser#varType.
     def enterVarType(self, ctx:DecafeParser.VarTypeContext):
         pass

@@ -29,6 +29,7 @@ def main(argv):
     # print(Trees.toStringTree(tree, None, parser))
     tsymbol = MyVistor()
     tsymbol.visit(tree)
+    print(type(tree))
     print(tsymbol.symTable.ToString())
     if args.showTree:
         treeView, _ = convertor.convertInit(tree)(tree, 0)

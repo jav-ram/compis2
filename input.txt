@@ -1,12 +1,19 @@
 char d;
-int a;
+int a[5];
 int b;
 int c;
 
+struct m {
+    char a;
+    int b;
+}
+
+struct m st;
+
+void method1(int x, char g) {
+    var = a;
+}
+
 class Program {
     int var;
-
-    void method1() {
-        var = a;
-    }
 }

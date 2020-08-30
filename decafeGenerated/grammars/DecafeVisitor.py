@@ -39,6 +39,11 @@ class DecafeVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by DecafeParser#structInstantiation.
+    def visitStructInstantiation(self, ctx:DecafeParser.StructInstantiationContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by DecafeParser#varType.
     def visitVarType(self, ctx:DecafeParser.VarTypeContext):
         return self.visitChildren(ctx)
