@@ -15,6 +15,7 @@ def setUpArgParser():
     argparser = argparse.ArgumentParser(description="Proyecto # 0")
     argparser.add_argument("-i", dest="input", help="input file", type=str)
     argparser.add_argument("-t", dest="showTree", help="If tag is on the tree will show", action='store_true')
+    argparser.add_argument("-ns", dest="NoSymbolTable", help="If tag is present will not print symbol table", action="store_true" )
 
     return argparser.parse_args()
 
@@ -29,8 +30,8 @@ def main(argv):
     # print(Trees.toStringTree(tree, None, parser))
     tsymbol = MyVistor()
     tsymbol.visit(tree)
-    print(type(tree))
-    print(tsymbol.symTable.ToString())
+    if not args.NoSymbolTable:
+        tsymbol.symTable.ToString()
     if args.showTree:
         treeView, _ = convertor.convertInit(tree)(tree, 0)
         treeView.view()

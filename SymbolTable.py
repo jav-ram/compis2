@@ -1,270 +1,242 @@
 from prettytable import PrettyTable
+import json
+import pprint
 
 GLOBAL = 0
+
+class Type():
+    def __init__(self, id, name, type, size, scope, dependency=None, symbols={}):
+        self.id = id
+        self.name = name
+        self.type = type
+        self.size = size
+        self.scope = scope
+
+        self.symbols = symbols
+        self.dependency = dependency
+
+class Types():
+    def __init__(self):
+        self.table = {}
+
+        self.count = 0
+
+    def get(self, id):
+        return self.table[id]
+
+    def getByName(self, name):
+        for id in self.table:
+            type = self.get(id)
+            if type.name == name:
+                return type
+
+    def getByNameScope(self, name, scope):
+        for id in self.table:
+            type = self.get(id)
+            if type.name == name and type.scope == scope:
+                return type
+
+    def getAllInScope(self, scope):
+        types = []
+        for id in self.table:
+            type = self.get(id)
+            if type.scope == scope:
+                types.append(type)
+        
+        return types
+
+    def push(self, name, type, size, scope, dependency=None, symbols={}):
+        self.table[self.count] = Type(self.count, name, type, size, scope, dependency, symbols)
+        self.count += 1
+        return self.count - 1
+
+class Symbol():
+    def __init__(self, id, name, type, size, offset, times=1, symbols={}):
+        self.id = id
+        self.name = name
+        self.type = type
+        self.size = size
+        self.offset = offset
+
+        self.times = times
+        self.symbols = symbols
+
+
+class Symbols():
+    def __init__(self):
+        self.table = {}
+
+        self.count = 0
+
+    def get(self, id):
+        return self.table[id]
+
+    def pushVar(self, name, type, size, offset, times=1):
+        self.table[self.count] = Symbol(self.count, name, type, size, offset, times=times)
+        self.count += 1
+        return self.count - 1
+
+    def pushStruct(self, name, type, size, offset, symbols):
+        self.table[self.count] = Symbol(self.count, name, type, size, offset, symbols=symbols)
+        self.count += 1
+        return self.count - 1
+
+
+class Scope():
+    def __init__(self, id, name, father, type, returnType=None, params=[]):
+        self.id = id
+        self.name = name
+        self.father = father
+        self.type = type
+
+        self.symbols = Symbols()
+
+        self.returnType = returnType
+        self.params = params
+
+        self.count = 0
+
+    def pushVar(self, name, type, size, offset, times=1):
+        return self.symbols.pushVar(name, type, size, offset, times=times)
+
+    def pushStruct(self, name, type, size, offset, symbols):
+        return self.symbols.pushStruct(name, type, size, offset, symbols=symbols)
 
 
 class SymbolTable():
     def __init__(self):
-        self.symbols = Symbols()    # list of Symbol()
-        self.types = Types()        # list of Type()
-        self.scopes = Scopes()      # list of Scope()
+        self.scopes = {}
+        self.types = Types()
+
+        self.scopes[0] = Scope(0, "global", None, None)
+
+        self.types.push("int", "int", 8, GLOBAL)
+        self.types.push("char", "char", 8, GLOBAL)
+        self.types.push("boolean", "boolean", 8, GLOBAL)
+        self.types.push("void", "void", 0, GLOBAL)
+
+        self.count = 1
+        self.current = 0
+
+    def prevScope(self):
+        curr = self.getScope(self.count - 1)
+        self.current = self.getScope(curr.father).id if self.current == GLOBAL else GLOBAL
+        return self.current
+
+    def nextScope(self):
+        self.current = self.getScope(self.count - 1).id
+        return self.current
     
-    # returns true if the varName is declare in the same scope or on prior scope
-    def isSymbolDeclared(self, name, scope):
-        possibleScopes = self.scopes.GetAllFathers(scope)
+    def getCurrentScope(self):
+        return self.scopes[self.current]
 
-        for s in possibleScopes:
-            if self.symbols.IsDeclarable(name, s):
-                return True
+    def getScope(self, id):
+        return self.scopes[id]
 
-        return False
+    def getType(self, id):
+        return self.types.get(id)
+
+    def isMethodDeclared(self, name, scope):
+        s = self.getScope(scope)
+
+        possibles = self.scopes
+        for sid in possibles:
+            p = self.getScope(sid)
+            if p.name == name:
+                return p
+
+        while s.father != None:
+            s = self.getScope(s.father)
+            possibles = self.types.getAllInScope(s.id)
+            for sid in possibles:
+                p = self.getScope(sid)
+                if p.name == name:
+                    return p
+        return None
 
     def isTypeDeclared(self, name, scope):
-        possibleScopes = self.scopes.GetAllFathers(scope)
-        for s in possibleScopes:
-            if self.types.IsDeclarable(name, s):
-                return s
-        return -1
+        s = self.getScope(scope)
 
-    def PushSymbol(self, name, t, scope, isParam, times=1):
-        last = self.symbols.Last()
+        possibles = self.types.getAllInScope(s.id)
+        for p in possibles:
+            if p.name == name:
+                return p
+
+        while s.father != None:
+            s = self.getScope(s.father)
+            possibles = self.types.getAllInScope(s.id)
+            for p in possibles:
+                if p.name == name:
+                    return p
+        return None
+
+    def isSymbolDeclared(self, name, scope):
+        s = self.getScope(scope)
+
+        possibles = s.symbols.table
+        for pid in possibles:
+            p = s.symbols.table[pid]
+            if p.name == name:
+                return p
+
+        while s.father != None:
+            s = self.getScope(s.father)
+            possibles = s.symbols.table
+            for pid in possibles:
+                p = s.symbols.table[pid]
+                if p.name == name:
+                    return p
+        return None
+
+    def pushScope(self, name, father, type, returnType=None, params=[]):
+        self.scopes[self.count] = Scope(self.count, name, father, type, returnType, params)
+        self.count += 1
+        return self.count - 1
+
+    def pushVar(self, name, type, times=1):
         offset = 0
+        size = self.getType(type).size
+        scope = self.getCurrentScope()
 
-        if last != None:
-            offset = last.offset + self.types.Get(last.type).size * last.times
-
-        ty = self.types.GetByName(t)
-
-        return self.symbols.Push(name, ty.id, offset, scope, times, isParam)
-
-    def PushType(self, name, t, size, scope):
-        return self.types.Push(name, t, size, scope)
-
-    def PushScope(self, name, type, returnType, father, paramsTypes):
-        return self.scopes.Push(name, type, returnType, father, paramsTypes)
-
-    def getScopeFirm(self, scope):
-        s = self.scopes.Get(scope)
-        return s.paramsTypes, s.returnType
-
-    def currentScope(self):
-        return self.scopes.Current().id
-
-    def currentScopeType(self):
-        return self.scopes.Current().type
-
-    def getType(self, name, scope):
-        return self.types.GetByNameScope(name, scope)
-
-    def getStructSize(self, name, father):
-        scope = self.scopes.GetByStructScope(name, father)
+        for s in scope.symbols.table:
+            sym = scope.symbols.get(s)
+            offset += self.getType(sym.type).size * times
         
-        if scope == None:
-            print("Struct " + name + " is not declared")
-            return
+        return scope.pushVar(name, type, size, offset, times)
+
+    def pushStruct(self, name, structName):
+        offset = 0
+        scope = self.getCurrentScope()
+        type = self.isTypeDeclared(structName, scope.id)
+        size = type.size
+
+        for s in type.dependency.table:
+            sym = type.dependency.table[s]
+            t = self.types.get(sym.type)
+            offset += t.size
         
-        ty = self.types.GetAllTypesOnScope(scope.id)
+
+        return scope.pushStruct(name, type.id, size, offset, type.dependency.table)
+
+    def pushType(self, name, type, size, symbols={}):
+        return self.types.push(name, type, size, self.getCurrentScope().id, symbols)
+
+    def pushStructType(self, name, symbols):
+        size = self.getSize(symbols)
+        return self.pushType(name, "struct", size, symbols=symbols)
+
+    def getSize(self, symbols):
         size = 0
-
-        for t in ty:
-            size += t.size
+        d = symbols if type(symbols) == type({}) else symbols.table
+        for id in d:
+            s = d[id]
+            t = self.getType(s.type)
+            if t.type == "struct":
+                size += self.getSize(s.symbols)
+            else:
+                size += t.size
 
         return size
 
-
     def ToString(self):
-        symbolString = PrettyTable(["id", "name", "type", "offset", "scope", "times", "isParam"])
-        typeString = PrettyTable(['id', 'name', 'type', 'size', 'scope'])
-        scopeString = PrettyTable(['id', 'name', 'type', 'returnType', 'father', 'paramsTypes'])
-        
-        # add symbols
-        for symId in self.symbols.table:
-            sym = self.symbols.Get(symId)
-            symbolString.add_row([sym.id, sym.name, sym.type, sym.offset, sym.scope, sym.times, sym.isParam])
-
-        # add types
-        for typeId in self.types.table:
-            typ = self.types.Get(typeId)
-            typeString.add_row([typ.id, typ.name, typ.type, typ.size, typ.scope])
-
-        # add scopes
-        for scopeId in self.scopes.table:
-            s = self.scopes.Get(scopeId)
-            scopeString.add_row([s.id, s.name, s.type, s.returnType, s.father, s.paramsTypes])
-
-
-        return "\n".join([symbolString.get_string(), typeString.get_string(), scopeString.get_string()])
-
-
-
-class Symbol():
-    def __init__(self, id, name, t, offset, scope, times, isParam):
-        self.id = id
-        self.name = name
-        self.type = t
-        self.offset = offset
-        self.scope = scope
-        self.times = times
-        self.isParam = isParam
-
-class Symbols():
-    def __init__(self):
-        self.count = 0
-        self.table = {}
-
-    def Push(self, name, t, offset, scope, times, isParam):
-        self.table[self.count] = Symbol(self.count, name, t, offset, scope, times, isParam)
-        self.count += 1
-        return self.count - 1
-
-    def Get(self, id):
-        return self.table[id]
-
-    def GetByNameScope(self, name, scope):
-        for id in self.table:
-            sym = self.Get(id)
-            if name == sym.name and scope == sym.scope:
-                return sym
-        return None
-
-    def GetAllSymbols(self, name):
-        symbols = []
-        for id in self.table:
-            sym = self.Get(id)
-            if name == sym.name:
-                symbols.append(sym)
-        return symbols
-
-    def Last(self):
-        if self.count == 0:
-            return None
-        return self.table[self.count-1]
-    
-    def GetAllSymbolsInSameScope(self, scope):
-        symbols = []
-        for id in self.table:
-            sym = self.Get(id)
-            if scope == sym.scope:
-                symbols.append(sym)
-        return symbols
-    
-    def IsDeclarable(self, name, scope):
-        if self.GetByNameScope(name, scope) != None:
-            return False
-        return True
-
-class Type():
-    def __init__(self, id, name, t, size, scope):
-        self.id = id
-        self.name = name
-        self.type = t
-        self.size = size
-        self.scope = scope
-
-BASIC_TYPES = {
-    0: Type(0, "int", "basic", 8, GLOBAL),
-    1: Type(1, "char", "basic", 8, GLOBAL),
-    2: Type(2, "boolean", "basic", 8, GLOBAL),
-    3: Type(3, "void", "basic", 0, GLOBAL),
-}
-
-class Types():
-    def __init__(self):
-        self.count = 4
-        self.table = BASIC_TYPES
-
-    def Push(self, name, t, size, scope):
-        self.table[self.count] = Type(self.count, name, t, size, scope)
-        self.count += 1
-        return self.count - 1
-
-    def Get(self, id):
-        return self.table[id]
-    
-    def GetByName(self, name):
-        for id in self.table:
-            sym = self.Get(id)
-            if name == sym.name:
-                return sym
-        return None
-    
-    def GetByNameScope(self, name, scope):
-        for id in self.table:
-            sym = self.Get(id)
-            if name == sym.name and scope == sym.scope:
-                return sym
-        return None
-    
-    def GetAllTypesOnScope(self, scope):
-        types = []
-        for id in self.table:
-            typ = self.Get(id)
-            if typ.scope == scope:
-                types.append(typ)
-        return types
-
-    def IsDeclarable(self, name, scope):
-        if self.GetByNameScope(name, scope) != None:
-            return True
-        return False
-
-class Scope():
-    def __init__(self, id, name, type, returnType, father, paramsTypes):
-        self.id = id
-        self.name = name
-        self.type = type
-        self.returnType = returnType
-        self.father = father
-        self.paramsTypes = paramsTypes
-
-BASIC_SCOPES = {
-    0: Scope(GLOBAL, "global", "global", None, None, [])
-}
-
-class Scopes():
-    def __init__(self):
-        self.count = 1
-        self.current = 0
-        self.table = BASIC_SCOPES
-    
-    def Next(self):
-        self.current = self.count - 1
-        return self.current
-    
-    def Prev(self):
-        self.current = self.Get(self.Get(self.current).father).id if self.current != GLOBAL else GLOBAL
-        return self.current
-    
-    def Current(self):
-        return self.table[self.current]
-
-    def GetByStructScope(self, name, father):
-        for id in self.table:
-            scope = self.Get(id)
-            if name == scope.name and father == scope.father and scope.type == "struct":
-                return scope
-        return None
-
-    def Push(self, name, type, returnType, father, paramsTypes):
-        self.table[self.count] = Scope(self.count, name, type, returnType, father, paramsTypes)
-        self.count += 1
-        return self.count - 1
-
-    def Get(self, id):
-        return self.table[id]
-
-    def GetAllFathers(self, id):
-        scopes = []
-
-        scopes.append(id)
-
-        if id == GLOBAL:
-            return scopes
-
-        father = self.Get(id).father
-        while self.Get(father).id != GLOBAL:
-            scopes.append(father)
-            father = self.Get(father).father
-        
-        scopes.append(father) # deberia de ser 0
-        return scopes
+        print(json.dumps(self.scopes, default=lambda x: x.__dict__), json.dumps(self.types, default=lambda x: x.__dict__))

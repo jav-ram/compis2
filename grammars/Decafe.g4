@@ -2,7 +2,7 @@ grammar Decafe;
 
 ID : LETTER (LETTER | DIGIT)*;
 NUM : DIGIT (DIGIT)*;
-CHAR: LETTER | '\'' DIGIT '\'';
+CHAR: '\''LETTER '\'';
 
 LETTER : ('a' .. 'z' | 'A' .. 'Z');
 DIGIT : [0-9]+;
