@@ -4,10 +4,10 @@ from antlr4 import *
 from antlr4.tree.Trees import Trees
 
 from decafeGenerated.grammars.DecafeLexer import DecafeLexer
-from decafeGenerated.grammars.DecafeParser import DecafeParser
 from decafeGenerated.grammars.DecafeListener import DecafeListener
 
 from visitor import MyVistor
+from myparser import MyParser
 
 from Tree import convertor
 
@@ -25,8 +25,9 @@ def main(argv):
     text = FileStream(args.input)
     lexer = DecafeLexer(text)
     stream = CommonTokenStream(lexer)
-    parser = DecafeParser(stream)
+    parser = MyParser(stream)
     tree = parser.program()
+    print(parser.errMsg)
     # print(Trees.toStringTree(tree, None, parser))
     tsymbol = MyVistor()
     tsymbol.visit(tree)

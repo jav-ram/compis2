@@ -51,18 +51,19 @@ location: (lex=ID | lex=ID '[' expr=expression ']') ('.' loc=location)?;
 expression: location #locExpr
     | methodCall #methodCallExpr
     | literal #literalExpr
+    | '(' expression ')' #parentExpr
     | left=expression op_derive=arith_op_derived right=expression #derivedOpExpr
     | left=expression op_basic=arith_op right=expression #opExpr
+    | left=expression operator=rel_op right=expression #relOpExpr
+    | left=expression operator=eq_op right=expression #eqOpExpr
+    | left=expression operator=cond_op right=expression #condOpExpr
     | '-' expression #negativeExpr
-    | '!' expression #negationExpr
-    | '(' expression ')' #parentExpr;
+    | '!' expression #negationExpr;
 arith_op: '+' | '-' | '%';
 arith_op_derived:  '*' | '/';
 methodCall: ID '(' (arg(','arg)*)? ')';
 arg: expression;
 op: arith_op | arith_op_derived | rel_op | eq_op | cond_op;
-
-
 rel_op: '<' | '>' | '<=' | '>=';
 eq_op: '==' | '!=';
 cond_op: '&&' | '||';

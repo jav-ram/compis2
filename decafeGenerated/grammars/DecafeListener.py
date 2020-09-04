@@ -206,12 +206,39 @@ class DecafeListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by DecafeParser#eqOpExpr.
+    def enterEqOpExpr(self, ctx:DecafeParser.EqOpExprContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#eqOpExpr.
+    def exitEqOpExpr(self, ctx:DecafeParser.EqOpExprContext):
+        pass
+
+
     # Enter a parse tree produced by DecafeParser#derivedOpExpr.
     def enterDerivedOpExpr(self, ctx:DecafeParser.DerivedOpExprContext):
         pass
 
     # Exit a parse tree produced by DecafeParser#derivedOpExpr.
     def exitDerivedOpExpr(self, ctx:DecafeParser.DerivedOpExprContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#relOpExpr.
+    def enterRelOpExpr(self, ctx:DecafeParser.RelOpExprContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#relOpExpr.
+    def exitRelOpExpr(self, ctx:DecafeParser.RelOpExprContext):
+        pass
+
+
+    # Enter a parse tree produced by DecafeParser#condOpExpr.
+    def enterCondOpExpr(self, ctx:DecafeParser.CondOpExprContext):
+        pass
+
+    # Exit a parse tree produced by DecafeParser#condOpExpr.
+    def exitCondOpExpr(self, ctx:DecafeParser.CondOpExprContext):
         pass
 
 

@@ -198,6 +198,13 @@ class SymbolTable():
         size = self.getType(type).size
         scope = self.getCurrentScope()
 
+        # check if is declared in same scope
+        possibles = scope.symbols.table
+        for pid in possibles:
+            p = scope.symbols.table[pid]
+            if p.name == name:
+                return None
+
         for s in scope.symbols.table:
             sym = scope.symbols.get(s)
             offset += self.getType(sym.type).size * times
@@ -208,6 +215,10 @@ class SymbolTable():
         offset = 0
         scope = self.getCurrentScope()
         type = self.isTypeDeclared(structName, scope.id)
+
+        if type == None:
+            return None
+
         size = type.size
 
         for s in type.dependency.table:

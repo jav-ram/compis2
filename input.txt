@@ -1,10 +1,10 @@
-char d[5];
-int a[5];
+char d[-5];
+int a[-1];
 int b;
 char c;
 
 struct u {
-    char i;
+    char i[2];
 }
 
 struct m {
@@ -14,18 +14,22 @@ struct m {
 }
 
 struct m st;
-struct m y;
+struct p y;
 
 int method1(int x, char g) {
     int h;
     int j;
-    a[4] = 1;
-    st.k.i = 'a';
     return j;
 }
 
 class Program {
     int var;
-    var = b * var * b / 1;
-    var = method1(b, c);
+    int c;
+    boolean t;
+    st.k.i[0] = 'c';
+    y.p = 'x';
+    var[0] = b * var + b * c;
+    if (0 < 1) {
+        var = 1;
+    }
 }

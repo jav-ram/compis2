@@ -9,11 +9,11 @@ VOID = "void"
 ERROR = "error"
 
 class MyEvaluator(DecafeVisitor):
-    def __init__(self, SymbolTable):
+    def __init__(self, SymbolTable, struct={}):
         self.symTable = SymbolTable
-        self.struct = {}
+        self.struct = struct
         self.typeVal = VOID
-        self.errorMsg = ""
+        self.errorMsg = []
 
     # Literals
     def visitInt_literal(self, ctx:DecafeParser.Int_literalContext):
@@ -34,6 +34,7 @@ class MyEvaluator(DecafeVisitor):
         if self.typeVal == STRUCT and self.struct != {}:
             symbols = self.struct.symbols
             isDefined = False
+
             for sid in symbols:
                 sym = symbols[sid]
                 if sym.name == id:
@@ -41,39 +42,77 @@ class MyEvaluator(DecafeVisitor):
                     break
             
             if not isDefined:
+                self.typeVal = ERROR
+                self.errorMsg.append("Property " + id + " is not define on the struct " + self.struct.name)
                 return
             
             typ = self.symTable.types.get(sym.type)
             if typ.type == STRUCT:
                 self.struct = sym
+                evaluator = MyEvaluator(self.symTable, self.struct)
+                evaluator.visitChildren(ctx)
+                if evaluator.typeVal == ERROR:
+                    self.errorMsg.append(evaluator.errorMsg)
+                    return
             self.typeVal = typ.type
             # check inside struct
-            pass
-        else:
-            sym = self.symTable.isSymbolDeclared(id, self.symTable.getCurrentScope().id)
-            if sym == None:
-                print("Error variable " + id + " is not declared ")
-                return
-            
-            typ = self.symTable.types.get(sym.type)
-            if typ.type == STRUCT:
-                self.struct = sym
-            self.typeVal = typ.type
 
             if ctx.expr != None:
                 num_expr = ctx.expr.getText()
+                if sym.times == 1:
+                    # is not an array
+                    self.typeVal = ERROR
+                    self.errorMsg.append("Variable " + id + " is not an array")
                 try:
                     num = int(num_expr)
                     if not(num >= 0 and num < sym.times):
                         self.typeVal = ERROR
-                        self.errorMsg = "Index exceeds the length of variable " + id
+                        self.errorMsg.append("Index exceeds the length of variable " + id)
                 except ValueError:
                     pass
                 ev = MyEvaluator(self.symTable)
                 ev.visit(ctx.expr)
                 if not ev.typeVal == INT:
                     self.typeVal = ERROR
-                    self.errorMsg = "Index of varaible " + id + " should be an integer but we get " + ev.typeVal
+                    self.errorMsg.append("Index of varaible " + id + " should be an integer but we get " + ev.typeVal)
+                return
+
+            pass
+        else:
+            sym = self.symTable.isSymbolDeclared(id, self.symTable.getCurrentScope().id)
+            if sym == None:
+                self.errorMsg.append("Error variable " + id + " is not declared ")
+                return
+            
+            typ = self.symTable.types.get(sym.type)
+            if typ.type == STRUCT:
+                self.struct = sym
+                evaluator = MyEvaluator(self.symTable, self.struct)
+                evaluator.visitChildren(ctx)
+                if evaluator.typeVal == ERROR:
+                    self.errorMsg.append(evaluator.errorMsg)
+                    return
+
+            self.typeVal = typ.type
+
+            if ctx.expr != None:
+                num_expr = ctx.expr.getText()
+                if sym.times == 1:
+                    # is not an array
+                    self.typeVal = ERROR
+                    self.errorMsg.append("Variable " + id + " is not an array")
+                try:
+                    num = int(num_expr)
+                    if not(num >= 0 and num < sym.times):
+                        self.typeVal = ERROR
+                        self.errorMsg.append("Index exceeds the length of variable " + id)
+                except ValueError:
+                    pass
+                ev = MyEvaluator(self.symTable)
+                ev.visit(ctx.expr)
+                if not ev.typeVal == INT:
+                    self.typeVal = ERROR
+                    self.errorMsg.append("Index of varaible " + id + " should be an integer but we get " + ev.typeVal)
                 return
 
             # is list?
@@ -92,7 +131,7 @@ class MyEvaluator(DecafeVisitor):
 
         if not params == incoming:
             self.typeVal = ERROR
-            self.errorMsg = "Arguments for method " +  id + " are not of the same type. We expected " + str(params) + " but we got " + str(incoming) 
+            self.errorMsg.append("Arguments for method " +  id + " are not of the same type. We expected " + str(params) + " but we got " + str(incoming))
             return
 
         self.typeVal = method.returnType
@@ -118,7 +157,192 @@ class MyEvaluator(DecafeVisitor):
 
         if method.returnType != t:
             self.typeVal = ERROR
-            self.errorMsg = "Method " + method.name + " is trying to return type " + t + " but is expected to be of type " + method.returnType
+            self.errorMsg.append("Method " + method.name + " is trying to return type " + t + " but is expected to be of type " + method.returnType)
             return
 
-    
+    def visitAsignStmt(self, ctx:DecafeParser.AsignStmtContext):
+        evaluator = MyEvaluator(self.symTable)
+        evaluator.visit(ctx.left)
+        leftType =  evaluator.typeVal
+        leftErrMsg = evaluator.errorMsg
+
+        evaluator = MyEvaluator(self.symTable)
+        evaluator.visit(ctx.right)
+        rightType = evaluator.typeVal
+        rightErrMsg = evaluator.errorMsg
+
+        if leftType == ERROR:
+            self.errorMsg.append(leftErrMsg)
+        if rightType == ERROR:
+            self.errorMsg.append(rightErrMsg)
+
+
+        if leftType != rightType:
+            self.errorMsg.append("Asign Error: type " + leftType + " is not equal to " + rightType + " in line " + str(ctx.start.line))
+            self.typeVal = ERROR
+            return
+
+        return
+
+    def visitDerivedOpExpr(self, ctx:DecafeParser.DerivedOpExprContext):
+        op = ctx.op_derive.getText()
+
+        evaluator = MyEvaluator(self.symTable)
+        evaluator.visit(ctx.left)
+        leftType =  evaluator.typeVal
+        leftErrMsg = evaluator.errorMsg
+
+        evaluator = MyEvaluator(self.symTable)
+        evaluator.visit(ctx.right)
+        rightType = evaluator.typeVal
+        rightErrMsg = evaluator.errorMsg
+
+
+        if leftType == ERROR:
+            self.errorMsg.append(leftErrMsg)
+        if rightType == ERROR:
+            self.errorMsg.append(rightErrMsg)
+
+        if leftType != INT or rightType != INT or leftType != rightType:
+            self.errorMsg.append("Operation " + op + " can only be apply on variables of type int")
+            self.typeVal = ERROR
+            return
+        
+        self.typeVal = INT
+
+        return
+
+    def visitOpExpr(self, ctx:DecafeParser.OpExprContext):
+        op = ctx.op_basic.getText()
+
+        evaluator = MyEvaluator(self.symTable)
+        evaluator.visit(ctx.left)
+        leftType =  evaluator.typeVal
+        leftErrMsg = evaluator.errorMsg
+
+        evaluator = MyEvaluator(self.symTable)
+        evaluator.visit(ctx.right)
+        rightType = evaluator.typeVal
+        rightErrMsg = evaluator.errorMsg
+
+        if leftType == ERROR:
+            self.errorMsg.append(leftErrMsg)
+        if rightType == ERROR:
+            self.errorMsg.append(rightErrMsg)
+
+        if leftType != INT or rightType != INT or leftType != rightType:
+            self.errorMsg.append("Operation " + op + " can only be apply on variables of type int")
+            self.typeVal = ERROR
+            return
+
+        self.typeVal = INT
+
+        return
+
+    def visitNegativeExpr(self, ctx:DecafeParser.NegativeExprContext):
+        evaluator = MyEvaluator(self.symTable)
+        evaluator.visit(ctx.expression())
+        
+        if evaluator.typeVal != INT:
+            self.errorMsg.append("The negative operation can only be applied on variables of type int")
+            self.typeVal = ERROR
+            return
+
+        self.typeVal = INT
+
+        return
+
+    def visitNegationExpr(self, ctx:DecafeParser.NegationExprContext):
+        evaluator = MyEvaluator(self.symTable)
+        evaluator.visit(ctx.expression())
+        
+        if evaluator.typeVal != 'boolean':
+            self.errorMsg.append("The negation (!) operation can only be applied on variables of type boolean")
+            self.typeVal = ERROR
+            return
+
+        self.typeVal = BOOL
+
+        return
+
+    def visitRelOpExpr(self, ctx:DecafeParser.RelOpExprContext):
+        op = ctx.operator.getText()
+
+        evaluator = MyEvaluator(self.symTable)
+        evaluator.visit(ctx.left)
+        leftType =  evaluator.typeVal
+        leftErrMsg = evaluator.errorMsg
+
+        evaluator = MyEvaluator(self.symTable)
+        evaluator.visit(ctx.right)
+        rightType = evaluator.typeVal
+        rightErrMsg = evaluator.errorMsg
+
+        if leftType == ERROR:
+            self.errorMsg.append(leftErrMsg)
+        if rightType == ERROR:
+            self.errorMsg.append(rightErrMsg)
+
+        if leftType != INT or rightType != INT or leftType != rightType:
+            self.errorMsg.append("Comparative operations like " + op + " can only be apply on variables of type int")
+            self.typeVal = ERROR
+            return
+        
+        self.typeVal = BOOL
+
+        return
+
+    def visitEqOpExpr(self, ctx:DecafeParser.EqOpExprContext):
+        op = ctx.operator.getText()
+
+        evaluator = MyEvaluator(self.symTable)
+        evaluator.visit(ctx.left)
+        leftType =  evaluator.typeVal
+        leftErrMsg = evaluator.errorMsg
+
+        evaluator = MyEvaluator(self.symTable)
+        evaluator.visit(ctx.right)
+        rightType = evaluator.typeVal
+        rightErrMsg = evaluator.errorMsg
+
+        if leftType == ERROR:
+            self.errorMsg.append(leftErrMsg)
+        if rightType == ERROR:
+            self.errorMsg.append(rightErrMsg)
+
+        if leftType != rightType:
+            self.errorMsg.append("Comparative operations like " + op + " can only be apply on variables of type int")
+            self.typeVal = ERROR
+            return
+
+        
+        self.typeVal = BOOL
+
+        return
+
+    def visitCondOpExpr(self, ctx:DecafeParser.CondOpExprContext):
+        op = ctx.operator.getText()
+
+        evaluator = MyEvaluator(self.symTable)
+        evaluator.visit(ctx.left)
+        leftType =  evaluator.typeVal
+        leftErrMsg = evaluator.errorMsg
+
+        evaluator = MyEvaluator(self.symTable)
+        evaluator.visit(ctx.right)
+        rightType = evaluator.typeVal
+        rightErrMsg = evaluator.errorMsg
+
+        if leftType == ERROR:
+            self.errorMsg.append(leftErrMsg)
+        if rightType == ERROR:
+            self.errorMsg.append(rightErrMsg)
+
+        if leftType != BOOL or rightType != BOOL or leftType != rightType:
+            self.errorMsg.append("Comparative operations like " + op + " can only be apply on variables of type int")
+            self.typeVal = ERROR
+            return
+        
+        self.typeVal = BOOL
+
+        return

@@ -119,8 +119,23 @@ class DecafeVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by DecafeParser#eqOpExpr.
+    def visitEqOpExpr(self, ctx:DecafeParser.EqOpExprContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by DecafeParser#derivedOpExpr.
     def visitDerivedOpExpr(self, ctx:DecafeParser.DerivedOpExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DecafeParser#relOpExpr.
+    def visitRelOpExpr(self, ctx:DecafeParser.RelOpExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DecafeParser#condOpExpr.
+    def visitCondOpExpr(self, ctx:DecafeParser.CondOpExprContext):
         return self.visitChildren(ctx)
 
 
