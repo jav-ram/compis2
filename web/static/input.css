@@ -1,0 +1,14 @@
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.source-code {
+    height: 90%;
+}
+
+.botton {
+    height: 3rem;
+}

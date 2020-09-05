@@ -10,7 +10,7 @@ def getNameRule(node):
     return stringified.replace('[', ']').replace(']', '').split(' ')[0]
 
 def convertInit(tree):
-    D = Digraph("Gramatica", "gramatic.gv")
+    D = Digraph("Gramatica", "gramatic")
     count = 0
     D.node(str(count), getNameRule(tree))
     def convert(node, parentId):

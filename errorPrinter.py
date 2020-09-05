@@ -12,6 +12,19 @@ def PrintError(errors, ctx):
             for error in errors:
                 print("\t" + error)
 
+def RecordError(errors, ctx):
+    errs = []
+    line = str(ctx.start.line)
+    if isinstance(errors, str):
+        if errors != "":
+            errs.append((errors, line))
+    if isinstance(errors, list):
+        errors = flatten(errors)
+        if len(errors) > 0:
+            for error in errors:
+                errs.append((error, line))
+    return errs
+
 def flatten(itr):
     if isinstance(itr, str):
         return

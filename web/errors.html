@@ -1,0 +1,19 @@
+{% extends "template.html" %}
+{% block head %}
+    {{ super() }}
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='errors.css') }}">
+{% endblock %}
+{% block content %}
+    <div class="error-wrapper">
+        <pre class="errors">
+            {% for line, msgs in errors.items() %}
+                <p class="error-line"><b> Error in line {{ line }}: </b></p>
+                <ul class="error-list">
+                    {% for msg in msgs %}
+                        <li class="error-msg"> {{ msg }} </li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        </pre>
+    </div>
+{% endblock %}

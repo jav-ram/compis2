@@ -132,7 +132,7 @@ class MyEvaluator(DecafeVisitor):
         if not params == incoming:
             self.typeVal = ERROR
             self.errorMsg.append("Arguments for method " +  id + " are not of the same type. We expected " + str(params) + " but we got " + str(incoming))
-            return
+            return visit
 
         self.typeVal = method.returnType
 
@@ -158,7 +158,7 @@ class MyEvaluator(DecafeVisitor):
         if method.returnType != t:
             self.typeVal = ERROR
             self.errorMsg.append("Method " + method.name + " is trying to return type " + t + " but is expected to be of type " + method.returnType)
-            return
+        return
 
     def visitAsignStmt(self, ctx:DecafeParser.AsignStmtContext):
         evaluator = MyEvaluator(self.symTable)
@@ -178,9 +178,8 @@ class MyEvaluator(DecafeVisitor):
 
 
         if leftType != rightType:
-            self.errorMsg.append("Asign Error: type " + leftType + " is not equal to " + rightType + " in line " + str(ctx.start.line))
+            self.errorMsg.append("Assign Error: type " + leftType + " is not equal to " + rightType)
             self.typeVal = ERROR
-            return
 
         return
 
@@ -191,11 +190,13 @@ class MyEvaluator(DecafeVisitor):
         evaluator.visit(ctx.left)
         leftType =  evaluator.typeVal
         leftErrMsg = evaluator.errorMsg
+        self.errorMsg.append(leftErrMsg)
 
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx.right)
         rightType = evaluator.typeVal
         rightErrMsg = evaluator.errorMsg
+        self.errorMsg.append(rightErrMsg)
 
 
         if leftType == ERROR:
@@ -219,11 +220,13 @@ class MyEvaluator(DecafeVisitor):
         evaluator.visit(ctx.left)
         leftType =  evaluator.typeVal
         leftErrMsg = evaluator.errorMsg
+        self.errorMsg.append(leftErrMsg)
 
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx.right)
         rightType = evaluator.typeVal
         rightErrMsg = evaluator.errorMsg
+        self.errorMsg.append(rightErrMsg)
 
         if leftType == ERROR:
             self.errorMsg.append(leftErrMsg)
@@ -242,6 +245,8 @@ class MyEvaluator(DecafeVisitor):
     def visitNegativeExpr(self, ctx:DecafeParser.NegativeExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx.expression())
+
+        self.errorMsg.append(evaluator.errorMsg)
         
         if evaluator.typeVal != INT:
             self.errorMsg.append("The negative operation can only be applied on variables of type int")
@@ -255,6 +260,8 @@ class MyEvaluator(DecafeVisitor):
     def visitNegationExpr(self, ctx:DecafeParser.NegationExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx.expression())
+
+        self.errorMsg.append(evaluator.errorMsg)
         
         if evaluator.typeVal != 'boolean':
             self.errorMsg.append("The negation (!) operation can only be applied on variables of type boolean")
@@ -272,11 +279,13 @@ class MyEvaluator(DecafeVisitor):
         evaluator.visit(ctx.left)
         leftType =  evaluator.typeVal
         leftErrMsg = evaluator.errorMsg
+        self.errorMsg.append(leftErrMsg)
 
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx.right)
         rightType = evaluator.typeVal
         rightErrMsg = evaluator.errorMsg
+        self.errorMsg.append(rightErrMsg)
 
         if leftType == ERROR:
             self.errorMsg.append(leftErrMsg)
@@ -299,11 +308,13 @@ class MyEvaluator(DecafeVisitor):
         evaluator.visit(ctx.left)
         leftType =  evaluator.typeVal
         leftErrMsg = evaluator.errorMsg
+        self.errorMsg.append(leftErrMsg)
 
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx.right)
         rightType = evaluator.typeVal
         rightErrMsg = evaluator.errorMsg
+        self.errorMsg.append(rightErrMsg)
 
         if leftType == ERROR:
             self.errorMsg.append(leftErrMsg)
@@ -327,11 +338,13 @@ class MyEvaluator(DecafeVisitor):
         evaluator.visit(ctx.left)
         leftType =  evaluator.typeVal
         leftErrMsg = evaluator.errorMsg
+        self.errorMsg.append(leftErrMsg)
 
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx.right)
         rightType = evaluator.typeVal
         rightErrMsg = evaluator.errorMsg
+        self.errorMsg.append(rightErrMsg)
 
         if leftType == ERROR:
             self.errorMsg.append(leftErrMsg)

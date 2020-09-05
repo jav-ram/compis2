@@ -4,11 +4,12 @@ from decafeGenerated.grammars.DecafeVisitor import DecafeVisitor
 from evaluator import MyEvaluator
 from SymbolTable import SymbolTable, Symbol
 
-from errorPrinter import PrintError
+from errorPrinter import RecordError
 
 class MyVistor(DecafeVisitor):
     def __init__(self):
         self.symTable = SymbolTable()
+        self.errorMsg = []
     
     # Visit a parse tree produced by DecafeParser#classDeclaration.
     def visitClassDeclaration(self, ctx:DecafeParser.ClassDeclarationContext):
@@ -46,13 +47,15 @@ class MyVistor(DecafeVisitor):
             if "struct" in typeVar:
                 # struct declaration
                 typeVar = typeVar.replace("struct", "")
-                self.symTable.pushStruct(name, typeVar)
-                return self.visitChildren(ctx)
+                var = self.symTable.pushStruct(name, typeVar)
+                if var == None:
+                    self.errorMsg.extend(RecordError("Struct not defined yet " + typeVar, ctx))
+                    return self.visitChildren(ctx)
             # is a declaration of a symbol inside a struct
             type = self.symTable.types.getByName(typeVar)
             var = self.symTable.pushVar(name, type.id)
             if var == None:
-                PrintError("Variable " + name + " is already declare", ctx)
+                self.errorMsg.extend(RecordError("Variable " + name + " is already declare", ctx))
 
             return self.visitChildren(ctx)
         elif "struct" in typeVar:
@@ -60,13 +63,13 @@ class MyVistor(DecafeVisitor):
             typeVar = typeVar.replace("struct", "")
             var = self.symTable.pushStruct(name, typeVar)
             if var == None:
-                PrintError("Struct not defined yet " + typeVar, ctx)
+                self.errorMsg.extend(RecordError("Struct not defined yet " + typeVar, ctx))
             return self.visitChildren(ctx)
 
         type = self.symTable.types.getByName(typeVar)
         var = self.symTable.pushVar(name, type.id)
         if var == None:
-            PrintError("Variable " + name + " is already declare", ctx)
+            self.errorMsg.extend(RecordError("Variable " + name + " is already declare", ctx))
         return self.visitChildren(ctx)
 
     def visitListVar(self, ctx:DecafeParser.ListVarContext):
@@ -75,13 +78,13 @@ class MyVistor(DecafeVisitor):
         times = int(str(ctx.NUM()))
 
         if times <= 0:
-            PrintError("Variable size is negative or 0", ctx)
+            self.errorMsg.extend(RecordError("Variable size is negative or 0", ctx))
 
         type = self.symTable.types.getByName(typeVar)
 
         var = self.symTable.pushVar(name, type.id, times=times)
         if var == None:
-            PrintError("Variable " + name + " is already declare", ctx)
+            self.errorMsg.extend(RecordError("Variable " + name + " is already declare", ctx))
         return self.visitChildren(ctx)
 
     def visitMethodDeclaration(self, ctx:DecafeParser.MethodDeclarationContext):
@@ -101,7 +104,7 @@ class MyVistor(DecafeVisitor):
         evaluator.visit(ctx)
 
         if evaluator.typeVal == "error":
-            PrintError(evaluator.errorMsg, ctx)
+            self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
 
         self.symTable.prevScope()
         return visit
@@ -114,7 +117,7 @@ class MyVistor(DecafeVisitor):
 
         var = self.symTable.pushVar(name, type.id)
         if var == None:
-            PrintError("Variable " + name + " is already declare", ctx)
+            self.errorMsg.extend(RecordError("Variable " + name + " is already declare", ctx))
         scope.params.append(type.id)
         
         return self.visitChildren(ctx)
@@ -123,56 +126,56 @@ class MyVistor(DecafeVisitor):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx)
         if evaluator.typeVal == 'error':
-            PrintError(evaluator.errorMsg, ctx)
+            self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
         return self.visitChildren(ctx)
 
     def visitDerivedOpExpr(self, ctx:DecafeParser.DerivedOpExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx)
         if evaluator.typeVal == 'error':
-            PrintError(evaluator.errorMsg, ctx)
+            self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
         return self.visitChildren(ctx)
 
     def visitOpExpr(self, ctx:DecafeParser.OpExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx)
         if evaluator.typeVal == 'error':
-            PrintError(evaluator.errorMsg, ctx)
+            self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
         return self.visitChildren(ctx)
 
     def visitNegativeExpr(self, ctx:DecafeParser.NegativeExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx.expression())
         if evaluator.typeVal == 'error':
-            PrintError(evaluator.errorMsg, ctx)
+            self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
         return self.visitChildren(ctx)
 
     def visitNegationExpr(self, ctx:DecafeParser.NegationExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx.expression())
         if evaluator.typeVal == 'error':
-            PrintError(evaluator.errorMsg, ctx)
+            self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
         return self.visitChildren(ctx)
 
     def visitRelOpExpr(self, ctx:DecafeParser.RelOpExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx)
         if evaluator.typeVal == 'error':
-            PrintError(evaluator.errorMsg, ctx)
+            self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
         return self.visitChildren(ctx)
 
     def visitEqOpExpr(self, ctx:DecafeParser.EqOpExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx)
         if evaluator.typeVal == 'error':
-            PrintError(evaluator.errorMsg, ctx)
+            self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
         return self.visitChildren(ctx)
 
     def visitCondOpExpr(self, ctx:DecafeParser.CondOpExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx)
         if evaluator.typeVal == 'error':
-            PrintError(evaluator.errorMsg, ctx)
+            self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
         return self.visitChildren(ctx)
     
     def visitIfStmt(self, ctx:DecafeParser.IfStmtContext):
@@ -186,7 +189,7 @@ class MyVistor(DecafeVisitor):
         t = evaluator.typeVal
         
         if t != 'boolean':
-            print("Expected a boolean expression")
+            self.errorMsg.extend(RecordError("Expected a boolean expression", ctx))
 
         visit = self.visitChildren(ctx)
 
@@ -205,7 +208,7 @@ class MyVistor(DecafeVisitor):
         t = evaluator.typeVal
         
         if t != 'boolean':
-            print("Expected a boolean expression")
+            self.errorMsg.extend(RecordError("Expected a boolean expression", ctx))
 
         visit = self.visitChildren(ctx)
 

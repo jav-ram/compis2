@@ -24,7 +24,6 @@ int method1(int x, char g) {
 
 class Program {
     int var;
-    int c;
     boolean t;
     st.k.i[0] = 'c';
     y.p = 'x';

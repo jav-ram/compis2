@@ -249,5 +249,10 @@ class SymbolTable():
 
         return size
 
-    def ToString(self):
+    def Print(self):
         print(json.dumps(self.scopes, default=lambda x: x.__dict__), json.dumps(self.types, default=lambda x: x.__dict__))
+
+    def ToString(self):
+        sym = json.dumps(self.scopes, default=lambda x: x.__dict__, indent=4, sort_keys=True)
+        typ = json.dumps(self.types, default=lambda x: x.__dict__, indent=4, sort_keys=True)
+        return (sym, typ)

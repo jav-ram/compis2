@@ -19,23 +19,34 @@ def setUpArgParser():
 
     return argparser.parse_args()
 
-def main(argv):
-    args = setUpArgParser()
-
-    text = FileStream(args.input)
+def compile(source):
+    text = InputStream(source)
     lexer = DecafeLexer(text)
     stream = CommonTokenStream(lexer)
     parser = MyParser(stream)
     tree = parser.program()
-    print(parser.errMsg)
+
+    errors = parser.errMsg
     # print(Trees.toStringTree(tree, None, parser))
     tsymbol = MyVistor()
+    # make symbol table
     tsymbol.visit(tree)
-    if not args.NoSymbolTable:
-        tsymbol.symTable.ToString()
-    if args.showTree:
-        treeView, _ = convertor.convertInit(tree)(tree, 0)
-        treeView.view()
+    tsymbol.symTable.Print() # print table
+    symTable = tsymbol.symTable.ToString() # get json of tables
+    # make tree
+    treeView, _ = convertor.convertInit(tree)(tree, 0)
+    treeView.render('tree.gv', "./web/static/img")
+
+    errors.extend(tsymbol.errorMsg)
+
+    errors = list(set(errors))
+
+    return symTable, errors
+
+def main(argv):
+    args = setUpArgParser()
+
+    compile(args.input)
         
 
 if __name__ == '__main__':

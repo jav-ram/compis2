@@ -1,0 +1,19 @@
+{% extends "template.html" %}
+{% block head %}
+    {{ super() }}
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='tree.css') }}">
+{% endblock %}
+{% block content %}
+    <div class="pdf-wrapper"">
+        <iframe
+            class=""
+            style="width: 100%;height: 100%;overflow-y:scroll; overflow-x:scroll;"
+            src="{{ url_for('static',filename='img/tree.gv.pdf') }}"
+            type="application/pdf"
+            ></iframe>
+    </div>
+{% endblock %}
+
+
+
+
