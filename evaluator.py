@@ -80,6 +80,7 @@ class MyEvaluator(DecafeVisitor):
             pass
         else:
             sym = self.symTable.isSymbolDeclared(id, self.symTable.getCurrentScope().id)
+            
             if sym == None:
                 self.errorMsg.append("Error variable " + id + " is not declared ")
                 return
@@ -123,25 +124,38 @@ class MyEvaluator(DecafeVisitor):
     def visitMethodCall(self, ctx:DecafeParser.MethodCallContext):
         id = str(ctx.ID())
         method = self.symTable.isMethodDeclared(id, self.symTable.getCurrentScope().id)
-        params = list(map(lambda tid: self.symTable.types.get(tid).name, method.params))
+        params = method.params if method != None else []
+        params = list(map(lambda tid: self.symTable.types.get(tid).name, params))
 
-        visit = self.visitChildren(ctx)
-        incoming=[]
-        [incoming.extend([v]) for k,v in self.struct.items()]
+        #incoming=[]
+        #[incoming.extend([v]) for k,v in self.struct.items()]
+
+        incoming = []
+        incomings = ctx.arg()
+        for i in incomings:
+            evaluator = MyEvaluator(self.symTable)
+            evaluator.visit(i)
+            incoming.append(evaluator.typeVal)
+
+        if method == None:
+            self.errorMsg.append("Method not declared yet")
+            return
 
         if not params == incoming:
             self.typeVal = ERROR
             self.errorMsg.append("Arguments for method " +  id + " are not of the same type. We expected " + str(params) + " but we got " + str(incoming))
-            return visit
 
         self.typeVal = method.returnType
-
-        return visit
+        return
 
     def visitArg(self, ctx:DecafeParser.ArgContext):
-        visit = self.visitChildren(ctx)
-        self.struct[ctx.getText()] = self.typeVal
-        return visit
+        evaluator = MyEvaluator(self.symTable)
+        evaluator.visit(ctx.expression())
+
+        self.typeVal = evaluator.typeVal
+        self.errorMsg.append(evaluator.errorMsg)
+        
+        return
 
     def visitReturnStmt(self, ctx:DecafeParser.ReturnStmtContext):
         method = self.symTable.getCurrentScope()
@@ -153,6 +167,11 @@ class MyEvaluator(DecafeVisitor):
             ev = MyEvaluator(self.symTable)
             ev.visit(ctx.expression())
             t = ev.typeVal
+
+        if method.returnType == None:
+            self.typeVal = ERROR
+            self.errorMsg.append("Method no return type")
+            return
 
 
         if method.returnType != t:
@@ -175,7 +194,6 @@ class MyEvaluator(DecafeVisitor):
             self.errorMsg.append(leftErrMsg)
         if rightType == ERROR:
             self.errorMsg.append(rightErrMsg)
-
 
         if leftType != rightType:
             self.errorMsg.append("Assign Error: type " + leftType + " is not equal to " + rightType)
@@ -205,7 +223,7 @@ class MyEvaluator(DecafeVisitor):
             self.errorMsg.append(rightErrMsg)
 
         if leftType != INT or rightType != INT or leftType != rightType:
-            self.errorMsg.append("Operation " + op + " can only be apply on variables of type int")
+            self.errorMsg.append("Operation " + op + " can only be apply on variables of type int and not " + leftType + " whith " + rightType )
             self.typeVal = ERROR
             return
         
@@ -234,7 +252,7 @@ class MyEvaluator(DecafeVisitor):
             self.errorMsg.append(rightErrMsg)
 
         if leftType != INT or rightType != INT or leftType != rightType:
-            self.errorMsg.append("Operation " + op + " can only be apply on variables of type int")
+            self.errorMsg.append("Operation " + op + " can only be apply on variables of type int and not " + leftType + " whith " + rightType )
             self.typeVal = ERROR
             return
 
@@ -296,7 +314,7 @@ class MyEvaluator(DecafeVisitor):
             self.errorMsg.append("Comparative operations like " + op + " can only be apply on variables of type int")
             self.typeVal = ERROR
             return
-        
+
         self.typeVal = BOOL
 
         return
@@ -326,7 +344,6 @@ class MyEvaluator(DecafeVisitor):
             self.typeVal = ERROR
             return
 
-        
         self.typeVal = BOOL
 
         return
@@ -355,7 +372,7 @@ class MyEvaluator(DecafeVisitor):
             self.errorMsg.append("Comparative operations like " + op + " can only be apply on variables of type int")
             self.typeVal = ERROR
             return
-        
+
         self.typeVal = BOOL
 
         return

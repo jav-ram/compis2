@@ -83,7 +83,7 @@ class Symbols():
 
 
 class Scope():
-    def __init__(self, id, name, father, type, returnType=None, params=[]):
+    def __init__(self, id, name, father, type, params, returnType=None):
         self.id = id
         self.name = name
         self.father = father
@@ -102,13 +102,17 @@ class Scope():
     def pushStruct(self, name, type, size, offset, symbols):
         return self.symbols.pushStruct(name, type, size, offset, symbols=symbols)
 
+    def pushParam(self, type):
+        print(type)
+        self.params.append(type)
+
 
 class SymbolTable():
     def __init__(self):
         self.scopes = {}
         self.types = Types()
 
-        self.scopes[0] = Scope(0, "global", None, None)
+        self.scopes[0] = Scope(0, "global", None, [], None)
 
         self.types.push("int", "int", 8, GLOBAL)
         self.types.push("char", "char", 8, GLOBAL)
@@ -119,8 +123,8 @@ class SymbolTable():
         self.current = 0
 
     def prevScope(self):
-        curr = self.getScope(self.count - 1)
-        self.current = self.getScope(curr.father).id if self.current == GLOBAL else GLOBAL
+        curr = self.getCurrentScope()
+        self.current = curr.father if curr.father != None else GLOBAL
         return self.current
 
     def nextScope(self):
@@ -131,7 +135,13 @@ class SymbolTable():
         return self.scopes[self.current]
 
     def getScope(self, id):
+        if not id in self.scopes:
+            return None
         return self.scopes[id]
+    
+    def pushParam(self, type):
+        scope = self.getCurrentScope()
+        scope.pushParam(type)
 
     def getType(self, id):
         return self.types.get(id)
@@ -150,7 +160,7 @@ class SymbolTable():
             possibles = self.types.getAllInScope(s.id)
             for sid in possibles:
                 p = self.getScope(sid)
-                if p.name == name:
+                if p != None and p.name == name:
                     return p
         return None
 
@@ -188,8 +198,8 @@ class SymbolTable():
                     return p
         return None
 
-    def pushScope(self, name, father, type, returnType=None, params=[]):
-        self.scopes[self.count] = Scope(self.count, name, father, type, returnType, params)
+    def pushScope(self, name, father, type, returnType=None):
+        self.scopes[self.count] = Scope(self.count, name, father, type, [], returnType)
         self.count += 1
         return self.count - 1
 

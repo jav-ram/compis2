@@ -35,7 +35,7 @@ parameter: typevar=parameterType lex=ID;
 parameterType: 'int'
     | 'char'
     | 'boolean';
-block: '{' (varDeclaration)* (statement)* '}';
+block: '{' (declaration)* (statement)* '}';
 statement: ifStmt
     | whileStmt
     | returnStmt
@@ -44,7 +44,8 @@ statement: ifStmt
     | asignStmt
     | (expression)? ';';
 asignStmt: left=location '=' right=expression ';';
-ifStmt: 'if' '(' expression ')' block ('else' block)?;
+ifStmt: 'if' '(' expression ')' block elseStmt?;
+elseStmt: ('else' block);
 whileStmt: 'while' '('expression')' block;
 returnStmt: 'return' (expression)? ';';
 location: (lex=ID | lex=ID '[' expr=expression ']') ('.' loc=location)?;

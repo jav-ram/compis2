@@ -22,5 +22,5 @@ class MyParser(DecafeParser):
         line = offendingToken.line
         #column = offendingToken.column
         #listener = self.getErrorListenerDispatch()
-        # listener.syntaxError(self, offendingToken, line, column, msg, e)
+        #listener.syntaxError(self, offendingToken, line, column, msg, e)
         self.errMsg.append((msg, line))

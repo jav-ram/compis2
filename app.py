@@ -53,7 +53,6 @@ def errorView():
         msg = error[0]
         line = int(error[1])
 
-
         if not line in prettyErr:
             prettyErr[line] = []
 

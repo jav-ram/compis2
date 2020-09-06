@@ -31,7 +31,7 @@ def compile(source):
     tsymbol = MyVistor()
     # make symbol table
     tsymbol.visit(tree)
-    tsymbol.symTable.Print() # print table
+    # tsymbol.symTable.Print() # print table
     symTable = tsymbol.symTable.ToString() # get json of tables
     # make tree
     treeView, _ = convertor.convertInit(tree)(tree, 0)

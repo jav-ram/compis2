@@ -152,15 +152,6 @@ class DecafeListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by DecafeParser#elseStmt.
-    def enterElseStmt(self, ctx:DecafeParser.ElseStmtContext):
-        pass
-
-    # Exit a parse tree produced by DecafeParser#elseStmt.
-    def exitElseStmt(self, ctx:DecafeParser.ElseStmtContext):
-        pass
-
-
     # Enter a parse tree produced by DecafeParser#whileStmt.
     def enterWhileStmt(self, ctx:DecafeParser.WhileStmtContext):
         pass

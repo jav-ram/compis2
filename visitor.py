@@ -51,6 +51,7 @@ class MyVistor(DecafeVisitor):
                 if var == None:
                     self.errorMsg.extend(RecordError("Struct not defined yet " + typeVar, ctx))
                     return self.visitChildren(ctx)
+                return
             # is a declaration of a symbol inside a struct
             type = self.symTable.types.getByName(typeVar)
             var = self.symTable.pushVar(name, type.id)
@@ -81,6 +82,8 @@ class MyVistor(DecafeVisitor):
             self.errorMsg.extend(RecordError("Variable size is negative or 0", ctx))
 
         type = self.symTable.types.getByName(typeVar)
+        if type == None:
+            type = self.symTable.types.getByName(typeVar.replace("struct", ""))
 
         var = self.symTable.pushVar(name, type.id, times=times)
         if var == None:
@@ -96,7 +99,17 @@ class MyVistor(DecafeVisitor):
         self.symTable.pushScope(name, scope.id, "method", returnType)
         self.symTable.nextScope()
         # visit
-        visit = self.visitChildren(ctx)
+        if ctx.parameter() != None:
+            parameters = ctx.parameter()
+            for param in parameters:
+                id = param.lex.text
+                typ = param.typevar.getText()
+                type = self.symTable.types.getByName(typ)
+                self.symTable.pushVar(id, type.id)
+                self.symTable.pushParam(type.id)
+        
+
+        visit = self.visitChildren(ctx.block())
         # exit scope
 
         # check for right return type
@@ -110,79 +123,67 @@ class MyVistor(DecafeVisitor):
         return visit
     
     def visitParameter(self, ctx:DecafeParser.ParameterContext):
-        name = str(ctx.ID())
-        scope = self.symTable.getCurrentScope()
-        typeVar = ctx.typevar.getText()
-        type = self.symTable.types.getByName(typeVar)
-
-        var = self.symTable.pushVar(name, type.id)
-        if var == None:
-            self.errorMsg.extend(RecordError("Variable " + name + " is already declare", ctx))
-        scope.params.append(type.id)
-        
         return self.visitChildren(ctx)
 
     def visitAsignStmt(self, ctx:DecafeParser.AsignStmtContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx)
+
         if evaluator.typeVal == 'error':
             self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
-        return self.visitChildren(ctx)
+        return
 
     def visitDerivedOpExpr(self, ctx:DecafeParser.DerivedOpExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx)
         if evaluator.typeVal == 'error':
             self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
-        return self.visitChildren(ctx)
+        return
 
     def visitOpExpr(self, ctx:DecafeParser.OpExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx)
         if evaluator.typeVal == 'error':
             self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
-        return self.visitChildren(ctx)
+        return
 
     def visitNegativeExpr(self, ctx:DecafeParser.NegativeExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx.expression())
         if evaluator.typeVal == 'error':
             self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
-        return self.visitChildren(ctx)
+        return
 
     def visitNegationExpr(self, ctx:DecafeParser.NegationExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx.expression())
         if evaluator.typeVal == 'error':
             self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
-        return self.visitChildren(ctx)
+        return
 
     def visitRelOpExpr(self, ctx:DecafeParser.RelOpExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx)
         if evaluator.typeVal == 'error':
             self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
-        return self.visitChildren(ctx)
+        return
 
     def visitEqOpExpr(self, ctx:DecafeParser.EqOpExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx)
         if evaluator.typeVal == 'error':
             self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
-        return self.visitChildren(ctx)
+        return
 
     def visitCondOpExpr(self, ctx:DecafeParser.CondOpExprContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx)
         if evaluator.typeVal == 'error':
             self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
-        return self.visitChildren(ctx)
+        return
     
     def visitIfStmt(self, ctx:DecafeParser.IfStmtContext):
         scope = self.symTable.getCurrentScope()
-        # make the new scope
-        self.symTable.pushScope("if", scope.id, "if", None)
-        self.symTable.nextScope()
 
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx.expression())
@@ -191,17 +192,24 @@ class MyVistor(DecafeVisitor):
         if t != 'boolean':
             self.errorMsg.extend(RecordError("Expected a boolean expression", ctx))
 
-        visit = self.visitChildren(ctx)
+        # make the new scope
+        print(self.symTable.getCurrentScope().id)
+        self.symTable.pushScope("if", scope.id, "if")
+        self.symTable.nextScope()
+
+        if ctx.block() != None:
+            try:
+                for b in ctx.block():
+                    self.visit(b)
+            except:
+                self.visit(ctx.block())
 
         # exit scope
         self.symTable.prevScope()
-        return visit
+        return
 
     def visitWhileStmt(self, ctx:DecafeParser.WhileStmtContext):
         scope = self.symTable.getCurrentScope()
-        # make the new scope
-        self.symTable.pushScope("if", scope.id, "if", None)
-        self.symTable.nextScope()
 
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx.expression())
@@ -210,8 +218,18 @@ class MyVistor(DecafeVisitor):
         if t != 'boolean':
             self.errorMsg.extend(RecordError("Expected a boolean expression", ctx))
 
-        visit = self.visitChildren(ctx)
+        # make the new scope
+        print(self.symTable.getCurrentScope().id)
+        self.symTable.pushScope("if", scope.id, "if")
+        self.symTable.nextScope()
+
+        if ctx.block() != None:
+            try:
+                for b in ctx.block():
+                    self.visit(b)
+            except:
+                self.visit(ctx.block())
 
         # exit scope
         self.symTable.prevScope()
-        return visit
+        return
