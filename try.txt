@@ -1,0 +1,11 @@
+int a;
+
+class Program {
+    int b;
+    while (1 == 1) {}
+    if (true == true) {
+        if (true) {
+            a = b*a;
+        }
+    }
+}

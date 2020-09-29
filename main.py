@@ -7,6 +7,7 @@ from decafeGenerated.grammars.DecafeLexer import DecafeLexer
 from decafeGenerated.grammars.DecafeListener import DecafeListener
 
 from visitor import MyVistor
+from generator import IntermediateCodeGenerator
 from myparser import MyParser
 
 from Tree import convertor
@@ -19,8 +20,11 @@ def setUpArgParser():
 
     return argparser.parse_args()
 
-def compile(source):
+def compile(source, isFile=False):
+    
     text = InputStream(source)
+    if isFile:
+        text = FileStream(source)
     lexer = DecafeLexer(text)
     stream = CommonTokenStream(lexer)
     parser = MyParser(stream)
@@ -37,6 +41,13 @@ def compile(source):
     treeView, _ = convertor.convertInit(tree)(tree, 0)
     treeView.render('tree.gv', "./web/static/img")
 
+    # intermediate code
+    inCode = IntermediateCodeGenerator(tsymbol.symTable)
+    inCode.visit(tree)
+
+    for l in inCode.lines:
+        print(l)
+
     errors.extend(tsymbol.errorMsg)
 
     errors = list(set(errors))
@@ -46,7 +57,7 @@ def compile(source):
 def main(argv):
     args = setUpArgParser()
 
-    compile(args.input)
+    symTable, errors = compile(args.input, isFile=True)
         
 
 if __name__ == '__main__':

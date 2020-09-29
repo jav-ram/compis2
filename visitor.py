@@ -128,7 +128,6 @@ class MyVistor(DecafeVisitor):
     def visitAsignStmt(self, ctx:DecafeParser.AsignStmtContext):
         evaluator = MyEvaluator(self.symTable)
         evaluator.visit(ctx)
-
         if evaluator.typeVal == 'error':
             self.errorMsg.extend(RecordError(evaluator.errorMsg, ctx))
         return
@@ -203,6 +202,12 @@ class MyVistor(DecafeVisitor):
                     self.visit(b)
             except:
                 self.visit(ctx.block())
+        
+        if ctx.elseStmt() != None:
+            self.symTable.prevScope()
+            self.symTable.pushScope("else", scope.id, "else")
+            self.visit(ctx.elseStmt())
+            self.symTable.nextScope()
 
         # exit scope
         self.symTable.prevScope()
@@ -220,7 +225,7 @@ class MyVistor(DecafeVisitor):
 
         # make the new scope
         print(self.symTable.getCurrentScope().id)
-        self.symTable.pushScope("if", scope.id, "if")
+        self.symTable.pushScope("while", scope.id, "while")
         self.symTable.nextScope()
 
         if ctx.block() != None:

@@ -198,6 +198,24 @@ class SymbolTable():
                     return p
         return None
 
+    def GetSymbolScope(self, name, scope):
+        s = self.getScope(scope)
+
+        possibles = s.symbols.table
+        for pid in possibles:
+            p = s.symbols.table[pid]
+            if p.name == name:
+                return p, s
+
+        while s.father != None:
+            s = self.getScope(s.father)
+            possibles = s.symbols.table
+            for pid in possibles:
+                p = s.symbols.table[pid]
+                if p.name == name:
+                    return p, s
+        return None
+
     def pushScope(self, name, father, type, returnType=None):
         self.scopes[self.count] = Scope(self.count, name, father, type, [], returnType)
         self.count += 1
@@ -205,7 +223,7 @@ class SymbolTable():
 
     def pushVar(self, name, type, times=1):
         offset = 0
-        size = self.getType(type).size
+        size = self.getType(type).size * times
         scope = self.getCurrentScope()
 
         # check if is declared in same scope
@@ -217,7 +235,7 @@ class SymbolTable():
 
         for s in scope.symbols.table:
             sym = scope.symbols.get(s)
-            offset += self.getType(sym.type).size * times
+            offset += sym.size
         
         return scope.pushVar(name, type, size, offset, times)
 
@@ -231,10 +249,9 @@ class SymbolTable():
 
         size = type.size
 
-        for s in type.dependency.table:
-            sym = type.dependency.table[s]
-            t = self.types.get(sym.type)
-            offset += t.size
+        for s in scope.symbols.table:
+            sym = scope.symbols.get(s)
+            offset += sym.size
         
 
         return scope.pushStruct(name, type.id, size, offset, type.dependency.table)
