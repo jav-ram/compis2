@@ -2,10 +2,10 @@ int a;
 
 class Program {
     int b;
-    while (1 == 1) {}
+    int c;
     if (true == true) {
-        if (true) {
-            a = b*a;
-        }
+        c = (-b)*c;
+    } else {
+        a = c*a;
     }
 }

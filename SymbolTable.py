@@ -103,7 +103,6 @@ class Scope():
         return self.symbols.pushStruct(name, type, size, offset, symbols=symbols)
 
     def pushParam(self, type):
-        print(type)
         self.params.append(type)
 
 

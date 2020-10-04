@@ -87,11 +87,11 @@ def Simplify(line:list, used:list=[], isStart=True):
 
 def StartScope(scope:Scope):
     label = '{}{}'.format(scope.name[0].capitalize(), scope.id)
-    return Line(op="START " + label, type="label")
+    return Line(op="START_" + label, type="label")
 
 def EndScope(scope:Scope):
     label = '{}{}'.format(scope.name[0].capitalize(), scope.id)
-    return Line(op="END " + label, type="label")
+    return Line(op="END_" + label, type="label")
     
 class Line():
     def __init__(self, op:str, arg1:str=None, arg2:str=None, dest:str=None, type="expr"):
@@ -187,35 +187,44 @@ class IntermediateCodeGenerator(DecafeVisitor):
         scope = self.scopeStack.getCurrent()
         expr = Simplify(self.visit(ctx.expression()))
         expr[-1].dest = REGISTER_FLAG
-        self.lines.append(StartScope(scope))  # add label of scope
+        self.lines.append(Line("GOTO", EndScope(scope).op))     # send to end to check if condition is met
+        self.lines.append(StartScope(scope))                    # add label of scope
 
-        self.lines.append(expr)
-        self.lines.append(Line("IF NOT", REGISTER_FLAG))
-        self.lines.append(Line("GOTO", EndScope(scope).op))
+        self.visitChildren(ctx)                                 # visit
+        self.lines.append(EndScope(scope))                      # add label of end scope
+        self.scopeStack.pop()                                   # exit scope
 
-        self.visitChildren(ctx)             # visit
-        self.lines.append(EndScope(scope))  # add label of scope
-        self.scopeStack.pop()               # exit scope
+        self.lines.extend(expr)                                 # calculate expr
+        self.lines.append(Line("IF", REGISTER_FLAG))            # evaluate 
+        self.lines.append(Line("GOTO", StartScope(scope).op))   # if true return to the loop else continue
         return
 
     def visitIfStmt(self, ctx:DecafeParser.IfStmtContext):
         self.scopeStack.push()
         scope = self.scopeStack.getCurrent()
-        self.lines.append(StartScope(scope))  # add label of scope
+
+        expr = Simplify(self.visit(ctx.expression()))
+        expr[-1].dest = REGISTER_FLAG
+
+        self.lines.extend(expr)                                 # calculate expr
+        self.lines.append(Line("IF NOT", REGISTER_FLAG))        # evaluate the negation
+        self.lines.append(Line("GOTO", EndScope(scope).op))     # if false go to the end of the if
+
+        self.lines.append(StartScope(scope))                    # add label of IF_START scope
 
         self.visit(ctx.block())
         
         if ctx.elseStmt() != None:
-            self.lines.append(EndScope(scope))  # add label of scope
+            self.lines.append(EndScope(scope))                  # add label of IF_END of scope
             self.scopeStack.pop()
             self.scopeStack.push()
             scope = self.scopeStack.getCurrent()
-            self.lines.append(StartScope(scope))  # add label of scope
+            self.lines.append(StartScope(scope))                # add label of ELSE_START scope
             self.visit(ctx.elseStmt())
 
         # exit scope
         self.scopeStack.pop()
-        self.lines.append(EndScope(scope))  # add label of scope
+        self.lines.append(EndScope(scope))                      # add label of IF_END or ELSE_END scope
         return
 
     def visitStructDeclaration(self, ctx:DecafeParser.StructDeclarationContext):
@@ -262,6 +271,9 @@ class IntermediateCodeGenerator(DecafeVisitor):
     
     def visitLiteralExpr(self, ctx:DecafeParser.LiteralExprContext):
         return ctx.literal().getText()
+    
+    def visitParentExpr(self, ctx:DecafeParser.ParentExprContext):
+        return self.visit(ctx.expression())
 
     def visitDerivedOpExpr(self, ctx:DecafeParser.DerivedOpExprContext):
         left = self.visit(ctx.left)
@@ -292,11 +304,20 @@ class IntermediateCodeGenerator(DecafeVisitor):
         op = ctx.operator.getText()
         right = self.visit(ctx.right)
         return [left, op, right]
+    
+    def visitNegativeExpr(self, ctx:DecafeParser.NegativeExprContext):
+        op = '-'
+        expr = self.visit(ctx.expression())
+        return [op, expr]
+    
+    def visitNegationExpr(self, ctx:DecafeParser.NegativeExprContext):
+        op = '!'
+        expr = self.visit(ctx.expression())
+        return [op, expr]
 
     def visitAsignStmt(self, ctx:DecafeParser.AsignStmtContext):
         name = ctx.location().getText()
-        scope = self.symTable.getCurrentScope()
-
+        scope = self.scopeStack.getCurrent()
         symbol, scopeSym = self.symTable.GetSymbolScope(name, scope.id)
         ma = scopeSym.name[0] + str(scopeSym.id)
         dest = GetMemoryAddress(ma, symbol.offset)
