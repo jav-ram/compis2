@@ -17,7 +17,7 @@ REGISTERS = [
     'R7',
     'R8',
 ]
-
+RETURN_REGISTER = 'EAX'
 REGISTER_FLAG = 'FL'
 
 def GetSymbolOnStruct(s:dict, name:str):
@@ -175,11 +175,22 @@ class IntermediateCodeGenerator(DecafeVisitor):
 
     def visitMethodDeclaration(self, ctx:DecafeParser.MethodDeclarationContext):
         self.scopeStack.push()              # get inside scope
-        scope = self.symTable.getCurrentScope()
-        self.lines.append(StartScope(scope))  # add label of scope
+        scope = self.scopeStack.getCurrent()
+        self.lines.append(StartScope(scope))# add label of scope
         self.visitChildren(ctx)             # visit
+        self.lines.append(Line("BX", "LR"))
         self.lines.append(EndScope(scope))  # add label of scope
         self.scopeStack.pop()               # exit scope
+        return
+    
+    def visitReturnStmt(self, ctx:DecafeParser.ReturnStmtContext):
+        expr = self.visit(ctx.expression()) # flat expression
+        if isinstance(expr, list) and len(expr) > 1:    # si es una expression compleja es decir operaciones
+            expr = Simplify(expr)                       # se crea una lista de lineas que operan para luego enviar a r0
+            expr[-1].dest = RETURN_REGISTER
+            self.lines.extend(expr)
+            return
+        self.lines.append(Line("MOV", RETURN_REGISTER, expr))
         return
 
     def visitWhileStmt(self, ctx:DecafeParser.WhileStmtContext):

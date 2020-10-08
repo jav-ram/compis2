@@ -3,6 +3,12 @@ int a;
 class Program {
     int b;
     int c;
+
+    int add(int x, int y) {
+        x = x + y;
+        return x;
+    }
+
     if (true == true) {
         c = (-b)*c;
     } else {
