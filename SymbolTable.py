@@ -71,6 +71,13 @@ class Symbols():
     def get(self, id):
         return self.table[id]
 
+    def getParams(self):
+        res = []
+        for key in self.table:
+            sym = self.get(key)
+            res.append(sym)
+        return res
+
     def pushVar(self, name, type, size, offset, times=1):
         self.table[self.count] = Symbol(self.count, name, type, size, offset, times=times)
         self.count += 1

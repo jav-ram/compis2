@@ -7,15 +7,15 @@ from SymbolTable import SymbolTable, Symbol, Scope
 from errorPrinter import RecordError
 
 REGISTERS = [
-    'R0',
-    'R1',
-    'R2',
-    'R3',
-    'R4',
-    'R5',
-    'R6',
-    'R7',
-    'R8',
+    '_t0',
+    '_t1',
+    '_t2',
+    '_t3',
+    '_t4',
+    '_t5',
+    '_t6',
+    '_t7',
+    '_t8',
 ]
 RETURN_REGISTER = 'EAX'
 REGISTER_FLAG = 'FL'
@@ -37,6 +37,7 @@ def GetTemporal(used:list):
 def Simplify(line:list, used:list=[], isStart=True):
     result = []
     t = []
+    line =  line if isinstance(line, list) else [line]
     for i in range(len(line)):
         node = line[i]
         if type(node) is list:
@@ -105,6 +106,8 @@ class Line():
         tmp = ""
         if self.type == "label":
             return self.op
+        if self.type == "SO": # single op
+            return self.op
         if self.dest != None:
             tmp += self.dest + " := "
         tmp += self.op + " " + self.arg1
@@ -115,6 +118,8 @@ class Line():
     def __str__(self):
         tmp = ""
         if self.type == "label":
+            return self.op
+        if self.type == "SO": # single op
             return self.op
         if self.dest != None:
             tmp += self.dest + " := "
@@ -182,7 +187,55 @@ class IntermediateCodeGenerator(DecafeVisitor):
         self.lines.append(EndScope(scope))  # add label of scope
         self.scopeStack.pop()               # exit scope
         return
+
+    def visitMethodCall(self, ctx:DecafeParser.MethodCallContext):
+        name = ctx.ID().getText()
+        scope = self.scopeStack.getCurrent()
+        methodScope = self.symTable.isMethodDeclared(name, scope)
+
+        methodLabel = StartScope(methodScope)
+        # get params memory address
+        ma = methodScope.name[0] + str(methodScope.id)
+        paramsDest = [GetMemoryAddress(ma, p.offset) for p in methodScope.symbols.getParams()]
+        # get args
+        argsCtx = ctx.arg()
+        args = [self.visit(arg) for arg in argsCtx]
+        # copy args to params
+        for i in range(0, len(args)):
+            self.lines.append(Line("MOV", paramsDest[i], args[i]))
+        # PUSH ALL
+        self.lines.append(Line("PSHA", type="SO"))
+        # GOTO methodLabel
+        self.lines.append(Line("GOTO", methodLabel.op))
+        # POP ALL
+        self.lines.append(Line("POPA", type="SO"))
     
+    # Visit a parse tree produced by DecafeParser#methodCallExpr.
+    def visitMethodCallExpr(self, ctx:DecafeParser.MethodCallExprContext):
+        c = ctx.methodCall()
+        name = c.ID().getText()
+        scope = self.scopeStack.getCurrent()
+        methodScope = self.symTable.isMethodDeclared(name, scope)
+
+        methodLabel = StartScope(methodScope)
+        # get params memory address
+        ma = methodScope.name[0] + str(methodScope.id)
+        paramsDest = [GetMemoryAddress(ma, p.offset) for p in methodScope.symbols.getParams()]
+        # get args
+        argsCtx = c.arg()
+        args = [self.visit(arg) for arg in argsCtx]
+        # copy args to params
+        for i in range(0, len(args)):
+            self.lines.append(Line("MOV", paramsDest[i], args[i]))
+        # PUSH ALL
+        self.lines.append(Line("PSHA", type="SO"))
+        # GOTO methodLabel
+        self.lines.append(Line("GOTO", methodLabel.op))
+        # POP ALL
+        self.lines.append(Line("POPA", type="SO"))
+
+        return RETURN_REGISTER
+
     def visitReturnStmt(self, ctx:DecafeParser.ReturnStmtContext):
         expr = self.visit(ctx.expression()) # flat expression
         if isinstance(expr, list) and len(expr) > 1:    # si es una expression compleja es decir operaciones
@@ -206,8 +259,8 @@ class IntermediateCodeGenerator(DecafeVisitor):
         self.scopeStack.pop()                                   # exit scope
 
         self.lines.extend(expr)                                 # calculate expr
-        self.lines.append(Line("IF", REGISTER_FLAG))            # evaluate 
-        self.lines.append(Line("GOTO", StartScope(scope).op))   # if true return to the loop else continue
+        self.lines.append(Line("IF",                            # evaluate
+            REGISTER_FLAG, "GOTO " + StartScope(scope).op))            
         return
 
     def visitIfStmt(self, ctx:DecafeParser.IfStmtContext):
@@ -218,8 +271,7 @@ class IntermediateCodeGenerator(DecafeVisitor):
         expr[-1].dest = REGISTER_FLAG
 
         self.lines.extend(expr)                                 # calculate expr
-        self.lines.append(Line("IF NOT", REGISTER_FLAG))        # evaluate the negation
-        self.lines.append(Line("GOTO", EndScope(scope).op))     # if false go to the end of the if
+        self.lines.append(Line("IF NOT", REGISTER_FLAG, "GOTO " + EndScope(scope).op))        # evaluate the negation
 
         self.lines.append(StartScope(scope))                    # add label of IF_START scope
 
@@ -334,6 +386,9 @@ class IntermediateCodeGenerator(DecafeVisitor):
         dest = GetMemoryAddress(ma, symbol.offset)
 
         expr = Simplify(self.visit(ctx.expression()))
-        expr[-1].dest = dest
+        try:
+            expr[-1].dest = dest
+        except:
+            expr[-1] = Line("MOV", dest, expr[-1][0])
         self.lines.extend(expr)
         return self.visitChildren(ctx)

@@ -10,6 +10,7 @@ class Program {
     }
 
     if (true == true) {
+        c = 10000;
         c = (-b)*c;
     } else {
         a = c*a;

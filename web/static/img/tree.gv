@@ -179,76 +179,96 @@ digraph Gramatica {
 	85 -> 88
 	89 [label=expression color=blue shape=ellipse]
 	85 -> 89
-	90 [label=expression color=blue shape=ellipse]
+	90 [label=literal color=blue shape=ellipse]
 	89 -> 90
-	91 [label="(" color=green shape=rectangle]
+	91 [label=int_literal color=blue shape=ellipse]
 	90 -> 91
-	92 [label=expression color=blue shape=ellipse]
-	90 -> 92
-	93 [label="-" color=green shape=rectangle]
-	92 -> 93
-	94 [label=expression color=blue shape=ellipse]
-	92 -> 94
-	95 [label=location color=blue shape=ellipse]
+	92 [label=10000 color=green shape=rectangle]
+	91 -> 92
+	93 [label=";" color=green shape=rectangle]
+	85 -> 93
+	94 [label=statement color=blue shape=ellipse]
+	82 -> 94
+	95 [label=asignStmt color=blue shape=ellipse]
 	94 -> 95
-	96 [label=b color=green shape=rectangle]
+	96 [label=location color=blue shape=ellipse]
 	95 -> 96
-	97 [label=")" color=green shape=rectangle]
-	90 -> 97
-	98 [label=arith_op_derived color=blue shape=ellipse]
-	89 -> 98
-	99 [label="*" color=green shape=rectangle]
-	98 -> 99
+	97 [label=c color=green shape=rectangle]
+	96 -> 97
+	98 [label="=" color=green shape=rectangle]
+	95 -> 98
+	99 [label=expression color=blue shape=ellipse]
+	95 -> 99
 	100 [label=expression color=blue shape=ellipse]
-	89 -> 100
-	101 [label=location color=blue shape=ellipse]
+	99 -> 100
+	101 [label="(" color=green shape=rectangle]
 	100 -> 101
-	102 [label=c color=green shape=rectangle]
-	101 -> 102
-	103 [label=";" color=green shape=rectangle]
-	85 -> 103
-	104 [label="}" color=green shape=rectangle]
-	82 -> 104
-	105 [label=elseStmt color=blue shape=ellipse]
-	67 -> 105
-	106 [label=else color=green shape=rectangle]
+	102 [label=expression color=blue shape=ellipse]
+	100 -> 102
+	103 [label="-" color=green shape=rectangle]
+	102 -> 103
+	104 [label=expression color=blue shape=ellipse]
+	102 -> 104
+	105 [label=location color=blue shape=ellipse]
+	104 -> 105
+	106 [label=b color=green shape=rectangle]
 	105 -> 106
-	107 [label=block color=blue shape=ellipse]
-	105 -> 107
-	108 [label="{" color=green shape=rectangle]
-	107 -> 108
-	109 [label=statement color=blue shape=ellipse]
-	107 -> 109
-	110 [label=asignStmt color=blue shape=ellipse]
-	109 -> 110
+	107 [label=")" color=green shape=rectangle]
+	100 -> 107
+	108 [label=arith_op_derived color=blue shape=ellipse]
+	99 -> 108
+	109 [label="*" color=green shape=rectangle]
+	108 -> 109
+	110 [label=expression color=blue shape=ellipse]
+	99 -> 110
 	111 [label=location color=blue shape=ellipse]
 	110 -> 111
-	112 [label=a color=green shape=rectangle]
+	112 [label=c color=green shape=rectangle]
 	111 -> 112
-	113 [label="=" color=green shape=rectangle]
-	110 -> 113
-	114 [label=expression color=blue shape=ellipse]
-	110 -> 114
-	115 [label=expression color=blue shape=ellipse]
-	114 -> 115
-	116 [label=location color=blue shape=ellipse]
+	113 [label=";" color=green shape=rectangle]
+	95 -> 113
+	114 [label="}" color=green shape=rectangle]
+	82 -> 114
+	115 [label=elseStmt color=blue shape=ellipse]
+	67 -> 115
+	116 [label=else color=green shape=rectangle]
 	115 -> 116
-	117 [label=c color=green shape=rectangle]
-	116 -> 117
-	118 [label=arith_op_derived color=blue shape=ellipse]
-	114 -> 118
-	119 [label="*" color=green shape=rectangle]
-	118 -> 119
-	120 [label=expression color=blue shape=ellipse]
-	114 -> 120
+	117 [label=block color=blue shape=ellipse]
+	115 -> 117
+	118 [label="{" color=green shape=rectangle]
+	117 -> 118
+	119 [label=statement color=blue shape=ellipse]
+	117 -> 119
+	120 [label=asignStmt color=blue shape=ellipse]
+	119 -> 120
 	121 [label=location color=blue shape=ellipse]
 	120 -> 121
 	122 [label=a color=green shape=rectangle]
 	121 -> 122
-	123 [label=";" color=green shape=rectangle]
-	110 -> 123
-	124 [label="}" color=green shape=rectangle]
-	107 -> 124
-	125 [label="}" color=green shape=rectangle]
-	11 -> 125
+	123 [label="=" color=green shape=rectangle]
+	120 -> 123
+	124 [label=expression color=blue shape=ellipse]
+	120 -> 124
+	125 [label=expression color=blue shape=ellipse]
+	124 -> 125
+	126 [label=location color=blue shape=ellipse]
+	125 -> 126
+	127 [label=c color=green shape=rectangle]
+	126 -> 127
+	128 [label=arith_op_derived color=blue shape=ellipse]
+	124 -> 128
+	129 [label="*" color=green shape=rectangle]
+	128 -> 129
+	130 [label=expression color=blue shape=ellipse]
+	124 -> 130
+	131 [label=location color=blue shape=ellipse]
+	130 -> 131
+	132 [label=a color=green shape=rectangle]
+	131 -> 132
+	133 [label=";" color=green shape=rectangle]
+	120 -> 133
+	134 [label="}" color=green shape=rectangle]
+	117 -> 134
+	135 [label="}" color=green shape=rectangle]
+	11 -> 135
 }
