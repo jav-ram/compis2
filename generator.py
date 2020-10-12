@@ -64,8 +64,6 @@ def Simplify(line:list, used:list=[], isStart=True):
                 i = used.index(t[1])
                 del used[i]
             t = Line(op=t[0], arg1=t[1], dest=dest)
-        else:
-            print("error")
     else:
         if len(t) == 3:
             if t[0] in used:
@@ -80,8 +78,6 @@ def Simplify(line:list, used:list=[], isStart=True):
                 i = used.index(t[1])
                 del used[i]
             t = Line(op=t[0], arg1=t[1])
-        else:
-            print("error")
         
     result.append(t)
     return result
@@ -278,10 +274,13 @@ class IntermediateCodeGenerator(DecafeVisitor):
         self.visit(ctx.block())
         
         if ctx.elseStmt() != None:
-            self.lines.append(EndScope(scope))                  # add label of IF_END of scope
+            ifend = EndScope(scope)                             # label if end
             self.scopeStack.pop()
             self.scopeStack.push()
             scope = self.scopeStack.getCurrent()
+            jmp = Line("GOTO", EndScope(scope).op)              # jmp to else end
+            self.lines.append(jmp)                              # add GOTO ELSE_END
+            self.lines.append(ifend)                            # add label of IF_END
             self.lines.append(StartScope(scope))                # add label of ELSE_START scope
             self.visit(ctx.elseStmt())
 
@@ -314,15 +313,25 @@ class IntermediateCodeGenerator(DecafeVisitor):
             ma = scopeSym.name[0] + str(scopeSym.id)
             return GetMemoryAddress(ma, symbol.offset + offset)
         elif tokenIdx != None and tokenLoc == None:     # option 2 is a list variables
-            index = int(tokenIdx.getText())
+            expr = self.visit(tokenIdx)
             if struct == None:
                 symbol, scopeSym = self.symTable.GetSymbolScope(name, scope.id)
             else:
                 symbol = GetSymbolOnStruct(struct.symbols.table, name)
                 scopeSym = sp
             size = self.symTable.getType(symbol.type).size
-            ma = scopeSym.name[0] + str(scopeSym.id)
-            return GetMemoryAddress(ma, (symbol.offset + size * index) + offset)
+
+            if isinstance(expr, list):
+                expr = Simplify(expr)
+                tmp = REGISTERS[-1]
+                expr[-1].dest = tmp
+                self.lines.extend(expr)
+                ma = scopeSym.name[0] + str(scopeSym.id)
+                return GetMemoryAddress(ma, (str(symbol.offset + offset) + '+{}*{}'.format(size, tmp)))
+            else:
+                index = int(expr)
+                ma = scopeSym.name[0] + str(scopeSym.id)
+                return GetMemoryAddress(ma, (symbol.offset + size * index) + offset)
         elif tokenLoc != None:                          # option 3 is a struct property
             if struct == None:
                 symbol, scopeSym = self.symTable.GetSymbolScope(name, scope.id)
@@ -391,4 +400,4 @@ class IntermediateCodeGenerator(DecafeVisitor):
         except:
             expr[-1] = Line("MOV", dest, expr[-1][0])
         self.lines.extend(expr)
-        return self.visitChildren(ctx)
+        return

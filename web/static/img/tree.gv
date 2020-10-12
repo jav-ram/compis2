@@ -15,260 +15,88 @@ digraph Gramatica {
 	2 -> 6
 	7 [label=declaration color=blue shape=ellipse]
 	0 -> 7
-	8 [label=classDeclaration color=blue shape=ellipse]
+	8 [label=varDeclaration color=blue shape=ellipse]
 	7 -> 8
-	9 [label=class color=green shape=rectangle]
+	9 [label=varType color=blue shape=ellipse]
 	8 -> 9
-	10 [label=Program color=green shape=rectangle]
-	8 -> 10
-	11 [label=block color=blue shape=ellipse]
+	10 [label=int color=green shape=rectangle]
+	9 -> 10
+	11 [label=l color=green shape=rectangle]
 	8 -> 11
-	12 [label="{" color=green shape=rectangle]
-	11 -> 12
-	13 [label=declaration color=blue shape=ellipse]
-	11 -> 13
-	14 [label=varDeclaration color=blue shape=ellipse]
-	13 -> 14
-	15 [label=varType color=blue shape=ellipse]
-	14 -> 15
-	16 [label=int color=green shape=rectangle]
-	15 -> 16
-	17 [label=b color=green shape=rectangle]
-	14 -> 17
-	18 [label=";" color=green shape=rectangle]
-	14 -> 18
-	19 [label=declaration color=blue shape=ellipse]
-	11 -> 19
-	20 [label=varDeclaration color=blue shape=ellipse]
-	19 -> 20
-	21 [label=varType color=blue shape=ellipse]
+	12 [label="[" color=green shape=rectangle]
+	8 -> 12
+	13 [label=5 color=green shape=rectangle]
+	8 -> 13
+	14 [label="]" color=green shape=rectangle]
+	8 -> 14
+	15 [label=";" color=green shape=rectangle]
+	8 -> 15
+	16 [label=declaration color=blue shape=ellipse]
+	0 -> 16
+	17 [label=classDeclaration color=blue shape=ellipse]
+	16 -> 17
+	18 [label=class color=green shape=rectangle]
+	17 -> 18
+	19 [label=Program color=green shape=rectangle]
+	17 -> 19
+	20 [label=block color=blue shape=ellipse]
+	17 -> 20
+	21 [label="{" color=green shape=rectangle]
 	20 -> 21
-	22 [label=int color=green shape=rectangle]
-	21 -> 22
-	23 [label=c color=green shape=rectangle]
-	20 -> 23
-	24 [label=";" color=green shape=rectangle]
-	20 -> 24
-	25 [label=declaration color=blue shape=ellipse]
-	11 -> 25
-	26 [label=methodDeclaration color=blue shape=ellipse]
-	25 -> 26
-	27 [label=methodType color=blue shape=ellipse]
-	26 -> 27
-	28 [label=int color=green shape=rectangle]
-	27 -> 28
-	29 [label=add color=green shape=rectangle]
-	26 -> 29
-	30 [label="(" color=green shape=rectangle]
-	26 -> 30
-	31 [label=parameter color=blue shape=ellipse]
-	26 -> 31
-	32 [label=parameterType color=blue shape=ellipse]
-	31 -> 32
-	33 [label=int color=green shape=rectangle]
-	32 -> 33
-	34 [label=x color=green shape=rectangle]
-	31 -> 34
-	35 [label="," color=green shape=rectangle]
-	26 -> 35
-	36 [label=parameter color=blue shape=ellipse]
-	26 -> 36
-	37 [label=parameterType color=blue shape=ellipse]
+	22 [label=declaration color=blue shape=ellipse]
+	20 -> 22
+	23 [label=varDeclaration color=blue shape=ellipse]
+	22 -> 23
+	24 [label=varType color=blue shape=ellipse]
+	23 -> 24
+	25 [label=int color=green shape=rectangle]
+	24 -> 25
+	26 [label=b color=green shape=rectangle]
+	23 -> 26
+	27 [label=";" color=green shape=rectangle]
+	23 -> 27
+	28 [label=declaration color=blue shape=ellipse]
+	20 -> 28
+	29 [label=varDeclaration color=blue shape=ellipse]
+	28 -> 29
+	30 [label=varType color=blue shape=ellipse]
+	29 -> 30
+	31 [label=int color=green shape=rectangle]
+	30 -> 31
+	32 [label=c color=green shape=rectangle]
+	29 -> 32
+	33 [label=";" color=green shape=rectangle]
+	29 -> 33
+	34 [label=statement color=blue shape=ellipse]
+	20 -> 34
+	35 [label=asignStmt color=blue shape=ellipse]
+	34 -> 35
+	36 [label=location color=blue shape=ellipse]
+	35 -> 36
+	37 [label=c color=green shape=rectangle]
 	36 -> 37
-	38 [label=int color=green shape=rectangle]
-	37 -> 38
-	39 [label=y color=green shape=rectangle]
-	36 -> 39
-	40 [label=")" color=green shape=rectangle]
-	26 -> 40
-	41 [label=block color=blue shape=ellipse]
-	26 -> 41
-	42 [label="{" color=green shape=rectangle]
-	41 -> 42
-	43 [label=statement color=blue shape=ellipse]
-	41 -> 43
-	44 [label=asignStmt color=blue shape=ellipse]
+	38 [label="=" color=green shape=rectangle]
+	35 -> 38
+	39 [label=expression color=blue shape=ellipse]
+	35 -> 39
+	40 [label=location color=blue shape=ellipse]
+	39 -> 40
+	41 [label=l color=green shape=rectangle]
+	40 -> 41
+	42 [label="[" color=green shape=rectangle]
+	40 -> 42
+	43 [label=expression color=blue shape=ellipse]
+	40 -> 43
+	44 [label=literal color=blue shape=ellipse]
 	43 -> 44
-	45 [label=location color=blue shape=ellipse]
+	45 [label=int_literal color=blue shape=ellipse]
 	44 -> 45
-	46 [label=x color=green shape=rectangle]
+	46 [label=4 color=green shape=rectangle]
 	45 -> 46
-	47 [label="=" color=green shape=rectangle]
-	44 -> 47
-	48 [label=expression color=blue shape=ellipse]
-	44 -> 48
-	49 [label=expression color=blue shape=ellipse]
-	48 -> 49
-	50 [label=location color=blue shape=ellipse]
-	49 -> 50
-	51 [label=x color=green shape=rectangle]
-	50 -> 51
-	52 [label=arith_op color=blue shape=ellipse]
-	48 -> 52
-	53 [label="+" color=green shape=rectangle]
-	52 -> 53
-	54 [label=expression color=blue shape=ellipse]
-	48 -> 54
-	55 [label=location color=blue shape=ellipse]
-	54 -> 55
-	56 [label=y color=green shape=rectangle]
-	55 -> 56
-	57 [label=";" color=green shape=rectangle]
-	44 -> 57
-	58 [label=statement color=blue shape=ellipse]
-	41 -> 58
-	59 [label=returnStmt color=blue shape=ellipse]
-	58 -> 59
-	60 [label=return color=green shape=rectangle]
-	59 -> 60
-	61 [label=expression color=blue shape=ellipse]
-	59 -> 61
-	62 [label=location color=blue shape=ellipse]
-	61 -> 62
-	63 [label=x color=green shape=rectangle]
-	62 -> 63
-	64 [label=";" color=green shape=rectangle]
-	59 -> 64
-	65 [label="}" color=green shape=rectangle]
-	41 -> 65
-	66 [label=statement color=blue shape=ellipse]
-	11 -> 66
-	67 [label=ifStmt color=blue shape=ellipse]
-	66 -> 67
-	68 [label=if color=green shape=rectangle]
-	67 -> 68
-	69 [label="(" color=green shape=rectangle]
-	67 -> 69
-	70 [label=expression color=blue shape=ellipse]
-	67 -> 70
-	71 [label=expression color=blue shape=ellipse]
-	70 -> 71
-	72 [label=literal color=blue shape=ellipse]
-	71 -> 72
-	73 [label=bool_literal color=blue shape=ellipse]
-	72 -> 73
-	74 [label=true color=green shape=rectangle]
-	73 -> 74
-	75 [label=eq_op color=blue shape=ellipse]
-	70 -> 75
-	76 [label="==" color=green shape=rectangle]
-	75 -> 76
-	77 [label=expression color=blue shape=ellipse]
-	70 -> 77
-	78 [label=literal color=blue shape=ellipse]
-	77 -> 78
-	79 [label=bool_literal color=blue shape=ellipse]
-	78 -> 79
-	80 [label=true color=green shape=rectangle]
-	79 -> 80
-	81 [label=")" color=green shape=rectangle]
-	67 -> 81
-	82 [label=block color=blue shape=ellipse]
-	67 -> 82
-	83 [label="{" color=green shape=rectangle]
-	82 -> 83
-	84 [label=statement color=blue shape=ellipse]
-	82 -> 84
-	85 [label=asignStmt color=blue shape=ellipse]
-	84 -> 85
-	86 [label=location color=blue shape=ellipse]
-	85 -> 86
-	87 [label=c color=green shape=rectangle]
-	86 -> 87
-	88 [label="=" color=green shape=rectangle]
-	85 -> 88
-	89 [label=expression color=blue shape=ellipse]
-	85 -> 89
-	90 [label=literal color=blue shape=ellipse]
-	89 -> 90
-	91 [label=int_literal color=blue shape=ellipse]
-	90 -> 91
-	92 [label=10000 color=green shape=rectangle]
-	91 -> 92
-	93 [label=";" color=green shape=rectangle]
-	85 -> 93
-	94 [label=statement color=blue shape=ellipse]
-	82 -> 94
-	95 [label=asignStmt color=blue shape=ellipse]
-	94 -> 95
-	96 [label=location color=blue shape=ellipse]
-	95 -> 96
-	97 [label=c color=green shape=rectangle]
-	96 -> 97
-	98 [label="=" color=green shape=rectangle]
-	95 -> 98
-	99 [label=expression color=blue shape=ellipse]
-	95 -> 99
-	100 [label=expression color=blue shape=ellipse]
-	99 -> 100
-	101 [label="(" color=green shape=rectangle]
-	100 -> 101
-	102 [label=expression color=blue shape=ellipse]
-	100 -> 102
-	103 [label="-" color=green shape=rectangle]
-	102 -> 103
-	104 [label=expression color=blue shape=ellipse]
-	102 -> 104
-	105 [label=location color=blue shape=ellipse]
-	104 -> 105
-	106 [label=b color=green shape=rectangle]
-	105 -> 106
-	107 [label=")" color=green shape=rectangle]
-	100 -> 107
-	108 [label=arith_op_derived color=blue shape=ellipse]
-	99 -> 108
-	109 [label="*" color=green shape=rectangle]
-	108 -> 109
-	110 [label=expression color=blue shape=ellipse]
-	99 -> 110
-	111 [label=location color=blue shape=ellipse]
-	110 -> 111
-	112 [label=c color=green shape=rectangle]
-	111 -> 112
-	113 [label=";" color=green shape=rectangle]
-	95 -> 113
-	114 [label="}" color=green shape=rectangle]
-	82 -> 114
-	115 [label=elseStmt color=blue shape=ellipse]
-	67 -> 115
-	116 [label=else color=green shape=rectangle]
-	115 -> 116
-	117 [label=block color=blue shape=ellipse]
-	115 -> 117
-	118 [label="{" color=green shape=rectangle]
-	117 -> 118
-	119 [label=statement color=blue shape=ellipse]
-	117 -> 119
-	120 [label=asignStmt color=blue shape=ellipse]
-	119 -> 120
-	121 [label=location color=blue shape=ellipse]
-	120 -> 121
-	122 [label=a color=green shape=rectangle]
-	121 -> 122
-	123 [label="=" color=green shape=rectangle]
-	120 -> 123
-	124 [label=expression color=blue shape=ellipse]
-	120 -> 124
-	125 [label=expression color=blue shape=ellipse]
-	124 -> 125
-	126 [label=location color=blue shape=ellipse]
-	125 -> 126
-	127 [label=c color=green shape=rectangle]
-	126 -> 127
-	128 [label=arith_op_derived color=blue shape=ellipse]
-	124 -> 128
-	129 [label="*" color=green shape=rectangle]
-	128 -> 129
-	130 [label=expression color=blue shape=ellipse]
-	124 -> 130
-	131 [label=location color=blue shape=ellipse]
-	130 -> 131
-	132 [label=a color=green shape=rectangle]
-	131 -> 132
-	133 [label=";" color=green shape=rectangle]
-	120 -> 133
-	134 [label="}" color=green shape=rectangle]
-	117 -> 134
-	135 [label="}" color=green shape=rectangle]
-	11 -> 135
+	47 [label="]" color=green shape=rectangle]
+	40 -> 47
+	48 [label=";" color=green shape=rectangle]
+	35 -> 48
+	49 [label="}" color=green shape=rectangle]
+	20 -> 49
 }
