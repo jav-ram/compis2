@@ -179,7 +179,6 @@ class IntermediateCodeGenerator(DecafeVisitor):
         scope = self.scopeStack.getCurrent()
         self.lines.append(StartScope(scope))# add label of scope
         self.visitChildren(ctx)             # visit
-        self.lines.append(Line("BX", "LR"))
         self.lines.append(EndScope(scope))  # add label of scope
         self.scopeStack.pop()               # exit scope
         return
@@ -195,10 +194,22 @@ class IntermediateCodeGenerator(DecafeVisitor):
         paramsDest = [GetMemoryAddress(ma, p.offset) for p in methodScope.symbols.getParams()]
         # get args
         argsCtx = ctx.arg()
-        args = [self.visit(arg) for arg in argsCtx]
+        args = [Simplify(self.visit(arg)) for arg in argsCtx]
         # copy args to params
+        cop = []
         for i in range(0, len(args)):
-            self.lines.append(Line("MOV", paramsDest[i], args[i]))
+            last = args[i][-1]
+            if isinstance(last, Line):
+                last.dest = paramsDest[i]
+                cop.extend(args[i])
+            elif isinstance(last, list):
+                last = last[0] if isinstance(last, list) else last
+                cop.append(Line("MOV", paramsDest[i], last))
+            elif isinstance(last, str):
+                cop.append(Line("MOV", paramsDest[i], last))
+        
+        self.lines.extend(cop)
+        
         # PUSH ALL
         self.lines.append(Line("PSHA", type="SO"))
         # GOTO methodLabel
@@ -219,10 +230,22 @@ class IntermediateCodeGenerator(DecafeVisitor):
         paramsDest = [GetMemoryAddress(ma, p.offset) for p in methodScope.symbols.getParams()]
         # get args
         argsCtx = c.arg()
-        args = [self.visit(arg) for arg in argsCtx]
+        args = [Simplify(self.visit(arg)) for arg in argsCtx]
         # copy args to params
+        cop = []
         for i in range(0, len(args)):
-            self.lines.append(Line("MOV", paramsDest[i], args[i]))
+            last = args[i][-1]
+            if isinstance(last, Line):
+                last.dest = paramsDest[i]
+                cop.extend(args[i])
+            elif isinstance(args[i], list):
+                last = last[0] if isinstance(args[i], list) else args[i]
+                cop.append(Line("MOV", paramsDest[i], last))
+            elif isinstance(last, str):
+                print(args[i])
+                cop.append(Line("MOV", paramsDest[i], last))
+        
+        self.lines.extend(cop)
         # PUSH ALL
         self.lines.append(Line("PSHA", type="SO"))
         # GOTO methodLabel
@@ -234,19 +257,21 @@ class IntermediateCodeGenerator(DecafeVisitor):
 
     def visitReturnStmt(self, ctx:DecafeParser.ReturnStmtContext):
         expr = self.visit(ctx.expression()) # flat expression
+
         if isinstance(expr, list) and len(expr) > 1:    # si es una expression compleja es decir operaciones
             expr = Simplify(expr)                       # se crea una lista de lineas que operan para luego enviar a r0
             expr[-1].dest = RETURN_REGISTER
             self.lines.extend(expr)
+            self.lines.append(Line("BX", "LR"))
             return
         self.lines.append(Line("MOV", RETURN_REGISTER, expr))
+        self.lines.append(Line("BX", "LR"))
         return
 
     def visitWhileStmt(self, ctx:DecafeParser.WhileStmtContext):
         self.scopeStack.push()              # get inside scope
         scope = self.scopeStack.getCurrent()
-        expr = Simplify(self.visit(ctx.expression()))
-        expr[-1].dest = REGISTER_FLAG
+        expr = self.visit(ctx.expression())
         self.lines.append(Line("GOTO", EndScope(scope).op))     # send to end to check if condition is met
         self.lines.append(StartScope(scope))                    # add label of scope
 
@@ -254,7 +279,12 @@ class IntermediateCodeGenerator(DecafeVisitor):
         self.lines.append(EndScope(scope))                      # add label of end scope
         self.scopeStack.pop()                                   # exit scope
 
-        self.lines.extend(expr)                                 # calculate expr
+        if isinstance(expr, list) and len(expr) > 1:    # si es una expression compleja es decir operaciones
+            expr = Simplify(expr)                       # se crea una lista de lineas que operan para luego enviar a r0
+            expr[-1].dest = REGISTER_FLAG
+            self.lines.extend(expr)
+        else:
+            self.lines.append(Line("MOV", REGISTER_FLAG, expr))
         self.lines.append(Line("IF",                            # evaluate
             REGISTER_FLAG, "GOTO " + StartScope(scope).op))            
         return
@@ -263,10 +293,15 @@ class IntermediateCodeGenerator(DecafeVisitor):
         self.scopeStack.push()
         scope = self.scopeStack.getCurrent()
 
-        expr = Simplify(self.visit(ctx.expression()))
-        expr[-1].dest = REGISTER_FLAG
+        expr = self.visit(ctx.expression())
 
-        self.lines.extend(expr)                                 # calculate expr
+        if isinstance(expr, list) and len(expr) > 1:    # si es una expression compleja es decir operaciones
+            expr = Simplify(expr)                       # se crea una lista de lineas que operan para luego enviar a r0
+            expr[-1].dest = REGISTER_FLAG
+            self.lines.extend(expr)
+        else:
+            self.lines.append(Line("MOV", REGISTER_FLAG, expr))
+        
         self.lines.append(Line("IF NOT", REGISTER_FLAG, "GOTO " + EndScope(scope).op))        # evaluate the negation
 
         self.lines.append(StartScope(scope))                    # add label of IF_START scope
@@ -329,9 +364,15 @@ class IntermediateCodeGenerator(DecafeVisitor):
                 ma = scopeSym.name[0] + str(scopeSym.id)
                 return GetMemoryAddress(ma, (str(symbol.offset + offset) + '+{}*{}'.format(size, tmp)))
             else:
-                index = int(expr)
-                ma = scopeSym.name[0] + str(scopeSym.id)
-                return GetMemoryAddress(ma, (symbol.offset + size * index) + offset)
+                try:
+                    index = int(expr)
+                    ma = scopeSym.name[0] + str(scopeSym.id)
+                    return GetMemoryAddress(ma, (symbol.offset + size * index) + offset)
+                except:
+                    index = expr
+                    ma = scopeSym.name[0] + str(scopeSym.id)
+                    print(index)
+                    return GetMemoryAddress(ma, str(symbol.offset + offset) + "+{}*{}".format(size, index))
         elif tokenLoc != None:                          # option 3 is a struct property
             if struct == None:
                 symbol, scopeSym = self.symTable.GetSymbolScope(name, scope.id)
@@ -388,11 +429,19 @@ class IntermediateCodeGenerator(DecafeVisitor):
         return [op, expr]
 
     def visitAsignStmt(self, ctx:DecafeParser.AsignStmtContext):
-        name = ctx.location().getText()
+        name = ctx.location().getText().split('[')
+        isList = True if len(name) > 1 else False
+        name = name[0]
         scope = self.scopeStack.getCurrent()
         symbol, scopeSym = self.symTable.GetSymbolScope(name, scope.id)
-        ma = scopeSym.name[0] + str(scopeSym.id)
-        dest = GetMemoryAddress(ma, symbol.offset)
+
+        print(self.visit(ctx.location()))
+        
+        if isList:
+            dest = self.visit(ctx.location())
+        else:
+            ma = scopeSym.name[0] + str(scopeSym.id)
+            dest = GetMemoryAddress(ma, symbol.offset)
 
         expr = Simplify(self.visit(ctx.expression()))
         try:

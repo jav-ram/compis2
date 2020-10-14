@@ -1,0 +1,13 @@
+{% extends "template.html" %}
+{% block head %}
+    {{ super() }}
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='input.css') }}">
+{% endblock %}
+{% block content %}
+    <form class="input-wrapper" action="/" method="POST">
+        <div class="input-wrapper">
+            <textarea class="source-code" name="source-code" cols="80">{{source}}</textarea>
+            <input type="submit">
+        </div>
+    </form>
+{% endblock %}

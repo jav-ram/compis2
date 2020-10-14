@@ -127,9 +127,6 @@ class MyEvaluator(DecafeVisitor):
         params = method.params if method != None else []
         params = list(map(lambda tid: self.symTable.types.get(tid).name, params))
 
-        #incoming=[]
-        #[incoming.extend([v]) for k,v in self.struct.items()]
-
         incoming = []
         incomings = ctx.arg()
         for i in incomings:

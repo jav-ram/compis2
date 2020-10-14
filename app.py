@@ -18,11 +18,12 @@ def build():
     text = request.form['source-code']
     session['source'] = text
     # compile the text
-    symTable, errors = compile(text)
+    symTable, errors, inCode = compile(text)
     session['sym'] = symTable[0]
     session['typ'] = symTable[1]
     session['errors'] = errors
-    print(errors)
+    session['inCode'] = inCode
+
     return render_template('input.html', source=text)
 
 @app.route('/tree')
@@ -61,3 +62,10 @@ def errorView():
     prettyErr = dict(sorted(prettyErr.items()))
 
     return render_template('errors.html', errors=prettyErr)
+
+@app.route('/icode')
+def intermediateCodeView():
+    inCode = ""
+    if session.get('inCode'):
+        inCode = session['inCode']
+    return render_template('input.html', source=inCode)

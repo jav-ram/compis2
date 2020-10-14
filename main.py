@@ -45,19 +45,28 @@ def compile(source, isFile=False):
     inCode = IntermediateCodeGenerator(tsymbol.symTable)
     inCode.visit(tree)
 
+    iCode = []
+
     for l in inCode.lines:
-        print(l)
+        if l.type != "label":
+            iCode.append("\t" + str(l))
+        else:
+            iCode.append(str(l))
+    
+    iCode = "\n".join(iCode)
+
+    print(iCode)
 
     errors.extend(tsymbol.errorMsg)
 
     errors = list(set(errors))
 
-    return symTable, errors
+    return symTable, errors, iCode
 
 def main(argv):
     args = setUpArgParser()
 
-    symTable, errors = compile(args.input, isFile=True)
+    symTable, errors, inCode = compile(args.input, isFile=True)
         
 
 if __name__ == '__main__':
