@@ -1,10 +1,7 @@
+int c;
 int a;
-int l[5];
-
 class Program {
     int b;
-    int c;
-    if (true) {}
-
-    c = l[4];
+    a = 5;
+    c = b;
 }
