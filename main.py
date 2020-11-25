@@ -8,6 +8,7 @@ from decafeGenerated.grammars.DecafeListener import DecafeListener
 
 from visitor import MyVistor
 from generator import IntermediateCodeGenerator
+from compiler import reserveMemory
 from myparser import MyParser
 
 from Tree import convertor
@@ -54,6 +55,10 @@ def compile(source, isFile=False):
             iCode.append(str(l))
     
     iCode = "\n".join(iCode)
+
+    # compile to NASM
+    symT = tsymbol.symTable
+    print(reserveMemory(symT.getScopeSizes()))
 
     print(iCode)
 

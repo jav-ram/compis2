@@ -242,7 +242,6 @@ class IntermediateCodeGenerator(DecafeVisitor):
                 last = last[0] if isinstance(args[i], list) else args[i]
                 cop.append(Line("MOV", paramsDest[i], last))
             elif isinstance(last, str):
-                print(args[i])
                 cop.append(Line("MOV", paramsDest[i], last))
         
         self.lines.extend(cop)
@@ -371,7 +370,6 @@ class IntermediateCodeGenerator(DecafeVisitor):
                 except:
                     index = expr
                     ma = scopeSym.name[0] + str(scopeSym.id)
-                    print(index)
                     return GetMemoryAddress(ma, str(symbol.offset + offset) + "+{}*{}".format(size, index))
         elif tokenLoc != None:                          # option 3 is a struct property
             if struct == None:
@@ -434,8 +432,6 @@ class IntermediateCodeGenerator(DecafeVisitor):
         name = name[0]
         scope = self.scopeStack.getCurrent()
         symbol, scopeSym = self.symTable.GetSymbolScope(name, scope.id)
-
-        print(self.visit(ctx.location()))
         
         if isList:
             dest = self.visit(ctx.location())

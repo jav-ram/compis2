@@ -1,5 +1,6 @@
 int c;
 int a;
+
 class Program {
     int b;
     a = 5;

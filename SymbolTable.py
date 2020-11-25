@@ -111,6 +111,13 @@ class Scope():
 
     def pushParam(self, type):
         self.params.append(type)
+    
+    def getSize(self):
+        size = 0
+        for key in self.symbols.table:
+            sym = self.symbols.table[key]
+            size += sym.size
+        return size
 
 
 class SymbolTable():
@@ -281,6 +288,14 @@ class SymbolTable():
                 size += t.size
 
         return size
+
+    def getScopeSizes(self):
+        sizes = []
+        for n in self.scopes:
+            scope = self.scopes[n]
+            id = str(scope.name[0] + str(scope.id)).capitalize()
+            sizes.append((id, scope.getSize()))
+        return sizes
 
     def Print(self):
         print(json.dumps(self.scopes, default=lambda x: x.__dict__), json.dumps(self.types, default=lambda x: x.__dict__))
