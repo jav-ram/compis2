@@ -3,6 +3,5 @@ int a;
 
 class Program {
     int b;
-    a = 5;
-    c = b;
+    a = 5 + 2 + b;
 }

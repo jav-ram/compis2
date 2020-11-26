@@ -61,32 +61,40 @@ digraph Gramatica {
 	26 -> 29
 	30 [label=expression color=blue shape=ellipse]
 	26 -> 30
-	31 [label=literal color=blue shape=ellipse]
+	31 [label=expression color=blue shape=ellipse]
 	30 -> 31
-	32 [label=int_literal color=blue shape=ellipse]
+	32 [label=expression color=blue shape=ellipse]
 	31 -> 32
-	33 [label=5 color=green shape=rectangle]
+	33 [label=literal color=blue shape=ellipse]
 	32 -> 33
-	34 [label=";" color=green shape=rectangle]
-	26 -> 34
-	35 [label=statement color=blue shape=ellipse]
-	17 -> 35
-	36 [label=asignStmt color=blue shape=ellipse]
-	35 -> 36
-	37 [label=location color=blue shape=ellipse]
+	34 [label=int_literal color=blue shape=ellipse]
+	33 -> 34
+	35 [label=5 color=green shape=rectangle]
+	34 -> 35
+	36 [label=arith_op color=blue shape=ellipse]
+	31 -> 36
+	37 [label="+" color=green shape=rectangle]
 	36 -> 37
-	38 [label=c color=green shape=rectangle]
-	37 -> 38
-	39 [label="=" color=green shape=rectangle]
-	36 -> 39
-	40 [label=expression color=blue shape=ellipse]
-	36 -> 40
-	41 [label=location color=blue shape=ellipse]
+	38 [label=expression color=blue shape=ellipse]
+	31 -> 38
+	39 [label=literal color=blue shape=ellipse]
+	38 -> 39
+	40 [label=int_literal color=blue shape=ellipse]
+	39 -> 40
+	41 [label=2 color=green shape=rectangle]
 	40 -> 41
-	42 [label=b color=green shape=rectangle]
-	41 -> 42
-	43 [label=";" color=green shape=rectangle]
-	36 -> 43
-	44 [label="}" color=green shape=rectangle]
-	17 -> 44
+	42 [label=arith_op color=blue shape=ellipse]
+	30 -> 42
+	43 [label="+" color=green shape=rectangle]
+	42 -> 43
+	44 [label=expression color=blue shape=ellipse]
+	30 -> 44
+	45 [label=location color=blue shape=ellipse]
+	44 -> 45
+	46 [label=b color=green shape=rectangle]
+	45 -> 46
+	47 [label=";" color=green shape=rectangle]
+	26 -> 47
+	48 [label="}" color=green shape=rectangle]
+	17 -> 48
 }
