@@ -381,6 +381,10 @@ class IntermediateCodeGenerator(DecafeVisitor):
             return self.visitLocation(ctx.location(), struct=tmp, offset=tmp.offset, sp=scopeSym)
     
     def visitLiteralExpr(self, ctx:DecafeParser.LiteralExprContext):
+        if ctx.literal().getText() == "true":
+            return "1"
+        elif ctx.literal().getText() == "false":
+            return "0"
         return ctx.literal().getText()
     
     def visitParentExpr(self, ctx:DecafeParser.ParentExprContext):

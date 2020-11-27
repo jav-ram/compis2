@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "C:\\Program Files (x86)\\Python37-32\\python.exe",
+    "python.pythonPath": "/home/javos/.pyenv/versions/3.7.0/bin/python",
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true
 }

@@ -1,7 +1,9 @@
 int c;
 int a;
+boolean h;
 
 class Program {
     int b;
+    h = true && false;
     a = 5 + 2 + b;
 }

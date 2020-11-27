@@ -58,8 +58,9 @@ def compile(source, isFile=False):
 
     # compile to NASM
     symT = tsymbol.symTable
-    for line in translate(symT, inCode.lines):
-        print(line)
+    with open('code.asm', 'w') as f:
+        for line in translate(symT, inCode.lines):
+            f.write("%s\n" % line)
 
     print(iCode)
 
